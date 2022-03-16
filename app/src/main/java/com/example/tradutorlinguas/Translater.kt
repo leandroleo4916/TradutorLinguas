@@ -1,6 +1,7 @@
 package com.example.tradutorlinguas
 
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -8,6 +9,13 @@ import java.net.URLEncoder
 import java.util.*
 
 class Translator {
+
+    @JvmStatic
+    fun main(args: Array<String>) {
+        val text = "Hello world!"
+        //Translated text: Hallo Welt!
+        println("Translated text: " + translate("en", "de", text))
+    }
 
     fun translate(langFrom: String, langTo: String, text: String): String {
 

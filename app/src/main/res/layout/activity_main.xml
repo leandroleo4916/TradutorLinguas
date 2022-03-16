@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="15dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="15dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_from"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:hint="De:"
+        app:layout_constraintEnd_toStartOf="@id/img_swap"
+        app:layout_constraintStart_toStartOf="@id/guide_start"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/text_view_from"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_to"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:hint="Para:"
+        app:layout_constraintEnd_toEndOf="@id/guide_end"
+        app:layout_constraintStart_toEndOf="@id/img_swap"
+        app:layout_constraintTop_toTopOf="@id/til_from">
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/text_view_to"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:inputType="none" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/img_swap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_swap"
+        android:foregroundGravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/til_to"
+        app:layout_constraintEnd_toStartOf="@+id/til_to"
+        app:layout_constraintStart_toEndOf="@+id/til_from"
+        app:layout_constraintTop_toTopOf="@+id/til_from"
+        tools:ignore="ContentDescription,MissingConstraints" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_from"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="25dp"
+        android:hint="Digite"
+        app:layout_constraintEnd_toEndOf="@id/guide_end"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@id/guide_start"
+        app:layout_constraintTop_toBottomOf="@+id/img_swap">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/text_to"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:hint="Tradução"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="@id/guide_end"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@id/guide_start"
+        app:layout_constraintTop_toBottomOf="@+id/text_from"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

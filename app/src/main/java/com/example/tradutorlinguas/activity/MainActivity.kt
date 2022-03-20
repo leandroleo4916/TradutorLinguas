@@ -6,7 +6,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.example.tradutorlinguas.dataclass.LanguageData
-import com.example.tradutorlinguas.Translator
+import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout

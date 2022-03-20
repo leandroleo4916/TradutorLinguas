@@ -1,4 +1,4 @@
-package com.example.tradutorlinguas
+package com.example.tradutorlinguas.remote
 
 import android.widget.TextView
 import kotlinx.coroutines.*

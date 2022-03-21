@@ -8,6 +8,5 @@ import com.example.tradutorlinguas.remote.TranslateRepository
 
 class ViewModelApi(private val repository: TranslateRepository): ViewModel() {
 
-    fun translate(language: LanguageData): LiveData<Resultado<String?>> =
-            repository.translate(language)
+    //fun translate(language: LanguageData): LiveData<Resultado<String?>> = repository.translate(language)
 }

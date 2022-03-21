@@ -7,9 +7,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 
-interface ILanguage {
 
-    suspend fun result(language: LanguageData): String{
+    suspend fun resulted(language: LanguageData): String{
         val urlStr = "https://script.google.com/macros/s/AKfycbwEdjA_0xrRXhI-qyFwjCisfehoOgkCPAOR7Ovr5g/exec" +
                 "?q=" + URLEncoder.encode(language.text, "UTF-8") +
                 "&target=" + language.to + "&source=" + language.from
@@ -26,4 +25,3 @@ interface ILanguage {
         input.close()
         return response.toString()
     }
-}

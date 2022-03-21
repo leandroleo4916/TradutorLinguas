@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">TradutorLinguas</string>
+    <string name="app_name">Tradutor de Linguas</string>
+    <string name="permissao_negada">Permissão negada!</string>
 </resources>

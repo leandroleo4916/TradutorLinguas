@@ -1,15 +1,21 @@
 package com.example.tradutorlinguas.activity
 
-import android.R
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
@@ -22,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val translate = Translator()
+    private val permissionCode = 1000
     private val viewModelApi: ViewModelApi by viewModel()
 
     companion object {
@@ -39,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("QueryPermissionsNeeded")
     private fun listener(){
         val list = Translator.Language.values()
-        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, list)
+        val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, list)
 
         binding.run {
             textViewFrom.setAdapter(adapter)
@@ -56,33 +63,38 @@ class MainActivity : AppCompatActivity() {
 
         binding.textFrom.editText?.doAfterTextChanged {
 
-            val text = binding.textFrom.text
             if (it != null && it.toString().isNotEmpty()){
-                val from = binding.tilFrom.text
-                val fr = Translator.Language.valueOf(from)
-                val to = binding.tilTo.text
-                val t = Translator.Language.valueOf(to)
+                val from = Translator.Language.valueOf(binding.tilFrom.text)
+                val to = Translator.Language.valueOf(binding.tilTo.text)
+                val text = binding.textFrom.text
 
-                observer(LanguageData(fr.str, t.str, text))
+                if (validationInternet(this)){
+                    observer(LanguageData(from.str, to.str, text))
+                }
+                else { binding.textTo.text = "Verifique sua conexão com a internet!" }
             }
             else{
                 binding.textTo.text = ""
+                binding.icSave.setImageResource(R.drawable.ic_save_gray)
+                binding.icPlay.setImageResource(R.drawable.ic_sound_gray)
             }
         }
 
-        binding.icVoz.setOnClickListener {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            }
+        binding.icVoz.setOnClickListener { permissionVoice() }
+    }
 
-            if (intent.resolveActivity(packageManager) == null) {
-                startActivityForResult(intent, SPEECH_REQUEST_CODE)
-            }
-            else {
-                Toast.makeText(this, "Erro ao gravar", Toast.LENGTH_SHORT).show()
-            }
+    private fun validationInternet (context: Context): Boolean {
+
+        val result: Boolean
+        val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivity.activeNetwork ?: return false
+        val getNetwork = connectivity.getNetworkCapabilities(network) ?: return false
+        result = when {
+            getNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            getNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            else -> false
         }
+        return result
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -97,11 +109,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observer(languageData: LanguageData) {
-        translate.translate(languageData, binding.textTo)
+        translate.translate(languageData, binding.textTo, binding.icSave, binding.icPlay)
     }
 
     private var TextInputLayout.text: String
         get() = editText?.text?.toString() ?: ""
         set(value) { editText?.setText(value) }
+
+    private fun permissionVoice() {
+
+        if (this.let {
+                ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) }
+                == PackageManager.PERMISSION_DENIED ||
+
+                this.let {
+                ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) }
+                == PackageManager.GET_PERMISSIONS) {
+
+            val permission = arrayOf( Manifest.permission.RECORD_AUDIO)
+            requestPermissions(permission, permissionCode)
+
+        } else { openVoice() }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            permissionCode -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED) {
+                    openVoice()
+                }
+                else { toast("Permissão negada") }
+            }
+        }
+    }
+
+    private fun openVoice(){
+
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        }
+
+        if (intent.resolveActivity(packageManager) == null) {
+            startActivityForResult(intent, SPEECH_REQUEST_CODE)
+        }
+        else { Toast.makeText(this, "Erro ao gravar", Toast.LENGTH_SHORT).show() }
+    }
+
+    private fun toast(message: String){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
 
 }

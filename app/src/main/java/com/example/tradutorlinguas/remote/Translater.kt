@@ -1,5 +1,6 @@
 package com.example.tradutorlinguas.remote
 
+import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.coroutines.*
 import java.io.BufferedReader
@@ -10,11 +11,12 @@ import java.net.URL
 import java.net.URLEncoder
 import java.util.*
 import androidx.lifecycle.liveData
+import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.dataclass.LanguageData
 
 class Translator {
 
-    fun translate(lang: LanguageData, textTo: TextView) {
+    fun translate(lang: LanguageData, textTo: TextView, icSave: ImageView, icPlay: ImageView) {
 
         val urlStr = "https://script.google.com/macros/s/AKfycbwEdjA_0xrRXhI-qyFwjCisfehoOgkCPAOR7Ovr5g/exec" +
                         "?q=" + URLEncoder.encode(lang.text, "UTF-8") +
@@ -33,6 +35,8 @@ class Translator {
                     response.append(inputLine)
                 }
                 input.close()
+                icSave.setImageResource(R.drawable.ic_save)
+                icPlay.setImageResource(R.drawable.ic_sound)
                 textTo.text = response
             }
         }
@@ -40,20 +44,10 @@ class Translator {
     }
 
     enum class Language(val str: String) {
-        Inglês("en"),
-        Português("pt"),
-        Espanhol("es"),
-        Françês("fr"),
-        Alemão("de"),
-        Árabe("ar"),
-        Bósnio("bs"),
-        Búlgaro("bg"),
-        Tcheco("cs"),
-        Dinamarquês("da"),
-        Holandês("nl"),
-        Finlandês("fi"),
-        Grego("el"),
-        Turco("tr");
+        Inglês("en"), Português("pt"), Espanhol("es"), Françês("fr"),
+        Alemão("de"), Árabe("ar"), Bósnio("bs"), Búlgaro("bg"),
+        Tcheco("cs"), Dinamarquês("da"), Holandês("nl"), Finlandês("fi"),
+        Grego("el"), Turco("tr");
     }
 }
 

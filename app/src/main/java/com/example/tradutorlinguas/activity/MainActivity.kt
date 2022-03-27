@@ -16,24 +16,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.example.tradutorlinguas.R
-import com.example.tradutorlinguas.dataclass.LanguageData
-import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
+import com.example.tradutorlinguas.dataclass.LanguageData
+import com.example.tradutorlinguas.remote.PlayVoice
+import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val translate = Translator()
+    private val playVoice = PlayVoice()
     private val permissionCode = 1000
     private val viewModelApi: ViewModelApi by viewModel()
 
-    companion object {
-        private const val SPEECH_REQUEST_CODE = 0
-    }
+    companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,27 +64,54 @@ class MainActivity : AppCompatActivity() {
 
         binding.textFrom.editText?.doAfterTextChanged {
 
-            if (it != null && it.toString().isNotEmpty()){
-                val from = Translator.Language.valueOf(binding.tilFrom.text)
-                val to = Translator.Language.valueOf(binding.tilTo.text)
-                val text = binding.textFrom.text
+            try {
+                if (it.toString().isNotBlank()){
 
-                if (validationInternet(this)){
-                    observer(LanguageData(from.str, to.str, text))
+                    val from = Translator.Language.valueOf(binding.tilFrom.text)
+                    val to = Translator.Language.valueOf(binding.tilTo.text)
+                    val text = binding.textFrom.text
+
+                    if (validationInternet(this)){
+                        observer(LanguageData(from.str, to.str, text))
+                    }
+                    else { binding.textTo.text = "Verifique sua conexão com a internet!" }
                 }
-                else { binding.textTo.text = "Verifique sua conexão com a internet!" }
-            }
-            else{
-                binding.textTo.text = ""
-                binding.icSave.setImageResource(R.drawable.ic_save_gray)
-                binding.icPlay.setImageResource(R.drawable.ic_sound_gray)
-            }
+                else{
+                    binding.textTo.text = ""
+                    binding.icSave.setImageResource(R.drawable.ic_save_gray)
+                    binding.icPlayFrom.setImageResource(R.drawable.ic_sound_gray)
+                    binding.icPlayTo.setImageResource(R.drawable.ic_sound_gray)
+                }
+            }catch (e: Exception){}
+
         }
 
         binding.icVoz.setOnClickListener { permissionVoice() }
+
+        binding.icPlayFrom.setOnClickListener {
+            val text = binding.textFrom.text
+            val from = Translator.Language.valueOf(binding.tilFrom.text)
+            if (text.isEmpty() || text.isBlank()){
+                toast("Digite uma palavra")
+            }
+            else{
+                playVoice.init(this, text, from.str)
+            }
+        }
+
+        binding.icPlayTo.setOnClickListener {
+            val text = binding.textTo.text.toString()
+            val to = Translator.Language.valueOf(binding.tilTo.text)
+            if (text.isEmpty() || text.isBlank()){
+                toast("Não há palavra para traduzir")
+            }
+            else{
+                playVoice.init(this, text, to.str)
+            }
+        }
     }
 
-    private fun validationInternet (context: Context): Boolean {
+    private fun validationInternet(context: Context): Boolean {
 
         val result: Boolean
         val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -109,7 +137,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observer(languageData: LanguageData) {
-        translate.translate(languageData, binding.textTo, binding.icSave, binding.icPlay)
+        translate.translate(languageData, binding.textTo, binding.icSave,
+                binding.icPlayFrom, binding.icPlayTo)
     }
 
     private var TextInputLayout.text: String
@@ -126,7 +155,7 @@ class MainActivity : AppCompatActivity() {
                 ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) }
                 == PackageManager.GET_PERMISSIONS) {
 
-            val permission = arrayOf( Manifest.permission.RECORD_AUDIO)
+            val permission = arrayOf(Manifest.permission.RECORD_AUDIO)
             requestPermissions(permission, permissionCode)
 
         } else { openVoice() }
@@ -139,10 +168,11 @@ class MainActivity : AppCompatActivity() {
         when (requestCode) {
             permissionCode -> {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED) {
+                        PackageManager.PERMISSION_GRANTED) {
                     openVoice()
+                } else {
+                    toast("Permissão negada")
                 }
-                else { toast("Permissão negada") }
             }
         }
     }

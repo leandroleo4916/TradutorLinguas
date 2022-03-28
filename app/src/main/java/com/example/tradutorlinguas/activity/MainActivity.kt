@@ -179,15 +179,21 @@ class MainActivity : AppCompatActivity() {
 
     private fun openVoice(){
 
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-        }
+        try {
+            
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, 
+                         RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            }
 
-        if (intent.resolveActivity(packageManager) == null) {
-            startActivityForResult(intent, SPEECH_REQUEST_CODE)
-        }
-        else { Toast.makeText(this, "Erro ao gravar", Toast.LENGTH_SHORT).show() }
+            if (intent.resolveActivity(packageManager) == null) {
+                startActivityForResult(intent, SPEECH_REQUEST_CODE)
+            }
+            else { Toast.makeText(this, "Erro ao gravar", Toast.LENGTH_SHORT).show() }
+            
+        }Cath(e: Exception) {}
+       
     }
 
     private fun toast(message: String){

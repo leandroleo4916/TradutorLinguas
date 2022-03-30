@@ -1,7 +1,6 @@
 package com.example.tradutorlinguas.activity
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -44,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @SuppressLint("QueryPermissionsNeeded")
     private fun listener(){
         val list = Translator.Language.values()
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, list)
@@ -117,6 +115,7 @@ class MainActivity : AppCompatActivity() {
         val connectivity = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivity.activeNetwork ?: return false
         val getNetwork = connectivity.getNetworkCapabilities(network) ?: return false
+
         result = when {
             getNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
             getNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true

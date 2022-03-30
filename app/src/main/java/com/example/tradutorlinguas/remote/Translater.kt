@@ -1,6 +1,5 @@
 package com.example.tradutorlinguas.remote
 
-import android.content.Context
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.liveData

@@ -9,6 +9,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.Exception
 import java.util.*
@@ -28,10 +30,9 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    private val translate = Translator()
-    private val playVoice = PlayVoice()
-    private val permissionCode = 1000
+    private val playVoice: PlayVoice by inject()
     private val viewModelApi: ViewModelApi by viewModel()
+    private val permissionCode = 1000
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -44,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun listener(){
+
         val list = Translator.Language.values()
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, list)
 
@@ -70,17 +72,20 @@ class MainActivity : AppCompatActivity() {
                     val text = binding.textFrom.text
 
                     if (validationInternet(this)){
+                        binding.progress.visibility = View.VISIBLE
                         observer(LanguageData(from.str, to.str, text))
                     }
                     else { binding.textTo.text = "Verifique sua conexão com a internet!" }
                 }
                 else{
-                    binding.textTo.text = ""
+                    binding.textTo.text = "Tradução"
                     binding.icSave.setImageResource(R.drawable.ic_save_gray)
                     binding.icPlayFrom.setImageResource(R.drawable.ic_sound_gray)
                     binding.icPlayTo.setImageResource(R.drawable.ic_sound_gray)
                 }
-            }catch (e: Exception){}
+            }catch (e: Exception){
+                toast("Erro na tradução, tente novamente!")
+            }
 
         }
 
@@ -100,11 +105,26 @@ class MainActivity : AppCompatActivity() {
         binding.icPlayTo.setOnClickListener {
             val text = binding.textTo.text.toString()
             val to = Translator.Language.valueOf(binding.tilTo.text)
-            if (text.isEmpty() || text.isBlank()){
+            if (text.isEmpty() || text.isBlank() || text == "Tradução"){
                 toast("Não há palavra para traduzir")
             }
             else{
                 playVoice.init(this, text, to.str)
+            }
+        }
+
+        binding.icSave.setOnClickListener {
+
+            val textTo = binding.textTo.text.toString()
+            val textFrom = binding.textFrom.text
+            val to = Translator.Language.valueOf(binding.tilTo.text)
+            val from = Translator.Language.valueOf(binding.tilFrom.text)
+
+            if (textTo.isEmpty() || textTo.isBlank()){
+                toast("Não há palavra para salvar")
+            }
+            else{
+
             }
         }
     }
@@ -136,8 +156,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observer(languageData: LanguageData) {
-        translate.translate(languageData, binding.textTo, binding.icSave,
-                binding.icPlayFrom, binding.icPlayTo)
+
+        viewModelApi.translate(languageData)
+        viewModelApi.translateValue.observe(this){
+            it?.let { string ->
+                binding.run {
+                    progress.visibility = View.INVISIBLE
+                    textTo.text = string
+                    icSave.setImageResource(R.drawable.ic_save)
+                    icPlayFrom.setImageResource(R.drawable.ic_sound)
+                    icPlayTo.setImageResource(R.drawable.ic_sound)
+                }
+            }
+        }
     }
 
     private var TextInputLayout.text: String

@@ -7,10 +7,10 @@ import java.util.*
 
 class PlayVoice {
 
-    private var tts: TextToSpeech? = null
+    private var textToSpeech: TextToSpeech? = null
 
     fun init(context: Context, str: String, lang: String){
-        try { tts = TextToSpeech(context, onInitListener(str, lang)) }
+        try { textToSpeech = TextToSpeech(context, onInitListener(str, lang)) }
         catch (e: Exception){ }
     }
 
@@ -19,12 +19,12 @@ class PlayVoice {
         val locale = Locale(lang)
         if (it == TextToSpeech.SUCCESS){
             
-            val result = tts?.setLanguage(locale)
+            val result = textToSpeech?.setLanguage(locale)
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("erro", "Linguagem não suportada")
             }
-            else { tts?.speak(str, TextToSpeech.QUEUE_FLUSH, null) }
+            else { textToSpeech?.speak(str, TextToSpeech.QUEUE_FLUSH, null) }
         }
-        else{ Log.e("erro", "Não pode reproduzir") }
+        else { Log.e("erro", "Não pode reproduzir") }
     }
 }

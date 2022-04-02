@@ -1,12 +1,29 @@
 package com.example.tradutorlinguas.viewmodel
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.tradutorlinguas.dataclass.LanguageData
-import com.example.tradutorlinguas.remote.Resultado
-import com.example.tradutorlinguas.remote.TranslateRepository
+import com.example.tradutorlinguas.remote.Translator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ViewModelApi(private val repository: TranslateRepository): ViewModel() {
+class ViewModelApi(private val repository: Translator): ViewModel() {
 
-    //fun translate(language: LanguageData): LiveData<Resultado<String?>> = repository.translate(language)
+    val translateValue = MutableLiveData<String>()
+
+    fun translate(language: LanguageData){
+        CoroutineScope(Dispatchers.Main).launch {
+            val ret = withContext(Dispatchers.Default) {
+                repository.translate(language)
+            }
+            translateValue.value = ret
+        }
+    }
+
+    fun saveTranslate(){
+
+    }
+
 }

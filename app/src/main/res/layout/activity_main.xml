@@ -179,13 +179,24 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/progress"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="115dp"
+        android:layout_marginTop="4dp"
+        android:visibility="invisible"
+        app:indicatorName="BallPulseIndicator"
+        app:layout_constraintStart_toStartOf="@+id/guide_start"
+        app:layout_constraintTop_toTopOf="@+id/text_to" />
+
     <TextView
         android:id="@+id/text_to"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        android:hint="Tradução"
+        android:text="Tradução"
         android:paddingTop="10dp"
         android:paddingStart="10dp"
         android:paddingEnd="50dp"

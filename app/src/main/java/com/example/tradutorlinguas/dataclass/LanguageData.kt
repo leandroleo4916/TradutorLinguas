@@ -1,14 +1,9 @@
 package com.example.tradutorlinguas.dataclass
 
 data class LanguageData(
+        val id: Int,
         val from: String,
         val to: String,
-        val text: String,
-)
-
-data class LanguageSaveData(
-        val from: String,
-        val to: String,
-        val textTo: String,
         val textFrom: String,
+        val textTo: String,
 )

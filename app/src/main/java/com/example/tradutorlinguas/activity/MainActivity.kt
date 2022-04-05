@@ -15,7 +15,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tradutorlinguas.R
+import com.example.tradutorlinguas.adapter.AdapterHistory
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
 import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.remote.PlayVoice
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val playVoice: PlayVoice by inject()
+    private val adapterHistory: AdapterHistory by inject()
     private val viewModelApi: ViewModelApi by viewModel()
     private val permissionCode = 1000
 
@@ -41,7 +44,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         listener()
+        recyclerHistory()
+        observeHistory()
+    }
 
+    private fun recyclerHistory() {
+        val recycler = binding.recyclerHistory
+        recycler.layoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recycler.adapter = adapterHistory
     }
 
     private fun listener(){
@@ -73,7 +84,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (validationInternet(this)){
                         binding.progress.visibility = View.VISIBLE
-                        observer(LanguageData(from.str, to.str, text))
+                        observer(LanguageData(0, from.str, to.str, text, ""))
                     }
                     else { binding.textTo.text = "Verifique sua conexão com a internet!" }
                 }
@@ -115,18 +126,27 @@ class MainActivity : AppCompatActivity() {
 
         binding.icSave.setOnClickListener {
 
-            val textTo = binding.textTo.text.toString()
             val textFrom = binding.textFrom.text
-            val to = Translator.Language.valueOf(binding.tilTo.text)
-            val from = Translator.Language.valueOf(binding.tilFrom.text)
 
-            if (textTo.isEmpty() || textTo.isBlank()){
+            if (textFrom.isEmpty() || textFrom.isBlank()){
                 toast("Não há palavra para salvar")
             }
             else{
-
+                val textTo = binding.textTo.text.toString()
+                val to = Translator.Language.valueOf(binding.tilTo.text)
+                val from = Translator.Language.valueOf(binding.tilFrom.text)
+                saveTranslate(LanguageData(0, to.name, from.name, textFrom, textTo))
             }
         }
+    }
+
+    private fun saveTranslate(languageData: LanguageData) {
+        val value = viewModelApi.saveHistory(languageData)
+        if (value){
+            toast("Tradução Salva!")
+            viewModelApi.consultHistory()
+        }
+        else { toast("Falha ao salvar!") }
     }
 
     private fun validationInternet(context: Context): Boolean {
@@ -171,6 +191,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun observeHistory(){
+        viewModelApi.consultHistory()
+        viewModelApi.history.observe(this){
+            if (it != null) {
+                adapterHistory.updateHistory(it)
+            }
+        }
+    }
+
     private var TextInputLayout.text: String
         get() = editText?.text?.toString() ?: ""
         set(value) { editText?.setText(value) }
@@ -210,7 +239,6 @@ class MainActivity : AppCompatActivity() {
     private fun openVoice(){
 
         try {
-            
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, 
                          RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -220,9 +248,9 @@ class MainActivity : AppCompatActivity() {
             if (intent.resolveActivity(packageManager) == null) {
                 startActivityForResult(intent, SPEECH_REQUEST_CODE)
             }
-            else { Toast.makeText(this, "Erro ao gravar", Toast.LENGTH_SHORT).show() }
+            else { toast("Erro ao gravar") }
             
-        }Cath(e: Exception) {}
+        }catch(e: Exception) {}
        
     }
 

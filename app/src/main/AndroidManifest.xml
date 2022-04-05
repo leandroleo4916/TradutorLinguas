@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TradutorLinguas"
         tools:ignore="AllowBackup">
-        <activity android:name=".activity.ActivityTranslaterSave"></activity>
+        <activity android:name=".activity.ActivityTranslateSave" />
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

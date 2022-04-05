@@ -5,6 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTintMode="screen"
+    android:background="@drawable/back_toolbar"
     tools:context=".activity.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
@@ -22,7 +24,7 @@
             android:layout_marginEnd="15dp">
 
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imageViewOption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_option"
@@ -37,14 +39,34 @@
                 android:text="@string/app_name"
                 android:textColor="@color/white"
                 android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/imageView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.Toolbar>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Traduções salvas"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/constraint_1"
+        app:layout_constraintStart_toStartOf="@+id/guide_start" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_down"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="100dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/constraint_1" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_start"
@@ -70,7 +92,7 @@
         android:hint="De:"
         app:layout_constraintEnd_toStartOf="@id/img_swap"
         app:layout_constraintStart_toStartOf="@id/guide_start"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+        app:layout_constraintTop_toBottomOf="@+id/constraint_1">
 
         <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/text_view_from"
@@ -186,6 +208,7 @@
         android:layout_marginStart="115dp"
         android:layout_marginTop="4dp"
         android:visibility="invisible"
+        android:background="@color/purple_500"
         app:indicatorName="BallPulseIndicator"
         app:layout_constraintStart_toStartOf="@+id/guide_start"
         app:layout_constraintTop_toTopOf="@+id/text_to" />
@@ -197,6 +220,7 @@
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
         android:text="Tradução"
+        android:textColor="@color/purple_500"
         android:paddingTop="10dp"
         android:paddingStart="10dp"
         android:paddingEnd="50dp"
@@ -215,6 +239,30 @@
         android:src="@drawable/ic_sound_gray"
         app:layout_constraintEnd_toStartOf="@+id/guide_end"
         app:layout_constraintTop_toTopOf="@+id/text_to"
-        tools:ignore="ContentDescription,MissingConstraints" />
+        tools:ignore="ContentDescription,MissingConstraints"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_1"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_marginTop="30dp"
+        android:paddingStart="12dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/recycler_saves" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

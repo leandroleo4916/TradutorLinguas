@@ -3,7 +3,6 @@ package com.example.tradutorlinguas.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.tradutorlinguas.dataclass.LanguageData
-import com.example.tradutorlinguas.di.repositoryHistory
 import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.repository.RepositoryHistory
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +31,9 @@ class ViewModelApi(private val translate: Translator,
 
     fun consultHistory(){
         history.value =  repositoryHistory.historyList()
+    }
+    fun removeHistory(id: Int){
+        repositoryHistory.removeHistory(id)
     }
 
 }

@@ -9,7 +9,7 @@ class DataBaseHistory(context: Context?) : SQLiteOpenHelper(context, DATA_NAME, 
 
     companion object {
         private const val DATA_NAME: String = "history.db"
-        private const val DATA_VERSION: Int = 1
+        private const val DATA_VERSION: Int = 2
     }
 
     private val createTableHistory = """ CREATE TABLE 
@@ -18,7 +18,9 @@ class DataBaseHistory(context: Context?) : SQLiteOpenHelper(context, DATA_NAME, 
             ${ConstantsHistory.HISTORY.COLUMNS.LANGFROM} text ,
             ${ConstantsHistory.HISTORY.COLUMNS.LANGTO} text ,
             ${ConstantsHistory.HISTORY.COLUMNS.TEXTFROM} text ,
-            ${ConstantsHistory.HISTORY.COLUMNS.TEXTTO} text 
+            ${ConstantsHistory.HISTORY.COLUMNS.TEXTTO} text ,
+            ${ConstantsHistory.HISTORY.COLUMNS.HOUR} text ,
+            ${ConstantsHistory.HISTORY.COLUMNS.DATE} text 
     );"""
 
     private val removeTableHistory = "drop table if exists ${ConstantsHistory.HISTORY.TABLE_NAME}"

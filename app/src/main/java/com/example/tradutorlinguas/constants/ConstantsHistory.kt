@@ -10,6 +10,8 @@ class ConstantsHistory private constructor(){
             const val LANGTO = "langto"
             const val TEXTFROM = "textfrom"
             const val TEXTTO = "textto"
+            const val HOUR = "hour"
+            const val DATE = "date"
         }
     }
 }

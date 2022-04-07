@@ -5,18 +5,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="130dp"
     android:layout_height="115dp"
-    android:layout_marginRight="4dp"
-    android:layout_marginLeft="4dp"
-    android:layout_marginTop="8dp"
-    android:padding="8dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="2dp"
+    android:paddingEnd="4dp"
+    android:paddingStart="6dp"
+    android:paddingTop="6dp"
     android:background="@drawable/back_fundo_orange"
     android:id="@+id/box_employee">
+
+    <ImageView
+        android:id="@+id/image_close"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:src="@drawable/ic_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/purple_500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_recycler_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:singleLine="true"
         android:text="De:"
         android:textSize="14sp"
@@ -24,23 +43,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_recycler_lang_to"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_lang_from"
+        android:layout_width="72sp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:singleLine="true"
         android:layout_marginStart="4dp"
+        android:singleLine="true"
         android:text="Português"
         android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_recycler_from"
         app:layout_constraintStart_toEndOf="@+id/tv_recycler_from"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/tv_recycler_from" />
 
     <TextView
         android:id="@+id/tv_translate_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:singleLine="true"
+        android:textStyle="bold"
+        android:layout_marginTop=""
         android:text="Exemplo de texto"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,33 +70,30 @@
         android:id="@+id/tv_recycler_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:singleLine="true"
-        android:layout_marginTop="4dp"
         android:text="Para:"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_translate_from" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
 
     <TextView
-        android:id="@+id/tv_recycler_lang_from"
+        android:id="@+id/tv_lang_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="4dp"
         android:layout_marginStart="4dp"
         android:singleLine="true"
         android:text="Inglês"
         android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_recycler_to"
         app:layout_constraintStart_toEndOf="@+id/tv_recycler_to"
-        app:layout_constraintTop_toBottomOf="@+id/tv_translate_from" />
+        app:layout_constraintTop_toTopOf="@+id/tv_recycler_to" />
 
     <TextView
         android:id="@+id/tv_translate_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:singleLine="true"
+        android:textStyle="bold"
         android:text="Exemplo de texto"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"

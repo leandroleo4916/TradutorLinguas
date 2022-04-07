@@ -22,6 +22,8 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
                 put(ConstantsHistory.HISTORY.COLUMNS.LANGTO, history.to)
                 put(ConstantsHistory.HISTORY.COLUMNS.TEXTFROM, history.textFrom)
                 put(ConstantsHistory.HISTORY.COLUMNS.TEXTTO, history.textTo)
+                put(ConstantsHistory.HISTORY.COLUMNS.HOUR, history.hour)
+                put(ConstantsHistory.HISTORY.COLUMNS.DATE, history.date)
             }
 
             dbWrite.insert(tableName, null, insertValues)
@@ -43,7 +45,9 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
                     ConstantsHistory.HISTORY.COLUMNS.LANGFROM,
                     ConstantsHistory.HISTORY.COLUMNS.LANGTO,
                     ConstantsHistory.HISTORY.COLUMNS.TEXTFROM,
-                    ConstantsHistory.HISTORY.COLUMNS.TEXTTO)
+                    ConstantsHistory.HISTORY.COLUMNS.TEXTTO,
+                    ConstantsHistory.HISTORY.COLUMNS.HOUR,
+                    ConstantsHistory.HISTORY.COLUMNS.DATE)
 
             val orderBy = ConstantsHistory.HISTORY.COLUMNS.ID
 
@@ -62,8 +66,12 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
                             cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.TEXTFROM))
                     val textTo = cursor.getString(
                             cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.TEXTTO))
+                    val hour = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.HOUR))
+                    val date = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.DATE))
 
-                    list.add(LanguageData(id, langFrom, langTo, textFrom, textTo))
+                    list.add(LanguageData(id, langFrom, langTo, textFrom, textTo, hour, date))
                 }
             }
             cursor?.close()
@@ -72,6 +80,17 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
         } catch (e: Exception) {
             return list
         }
+    }
+
+    fun removeHistory(id: Int) {
+
+        try {
+            val selection = ConstantsHistory.HISTORY.COLUMNS.ID + " = ?"
+            val args = arrayOf(id.toString())
+
+            dbWrite.delete(tableName, selection, args)
+
+        } catch (e: Exception) {  }
     }
 
     /*
@@ -342,18 +361,6 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
         } catch (e: Exception) {
             return employee!!
         }
-    }
-
-    fun removeEmployee(id: Int): Boolean {
-
-        return try {
-            val selection = ConstantsEmployee.EMPLOYEE.COLUMNS.ID + " = ?"
-            val args = arrayOf(id.toString())
-
-            dbWrite.delete(tableName, selection, args)
-            true
-
-        } catch (e: Exception) { false }
     }
 
     fun consultPhoto(id: Int): ByteArray? {

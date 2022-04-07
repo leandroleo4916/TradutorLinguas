@@ -20,8 +20,12 @@ import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.adapter.AdapterHistory
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
 import com.example.tradutorlinguas.dataclass.LanguageData
+import com.example.tradutorlinguas.interfaces.IClickItemRecycler
+import com.example.tradutorlinguas.interfaces.INotification
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
+import com.example.tradutorlinguas.util.CaptureHourDate
+import com.example.tradutorlinguas.util.GetColor
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.ext.android.inject
@@ -29,13 +33,17 @@ import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.Exception
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val playVoice: PlayVoice by inject()
-    private val adapterHistory: AdapterHistory by inject()
+    private lateinit var adapterHistory: AdapterHistory
+    private val captureHourDate: CaptureHourDate by inject()
+    private val color: GetColor = GetColor()
     private val viewModelApi: ViewModelApi by viewModel()
     private val permissionCode = 1000
+    private var value = 0
+    private var size = 0
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -49,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun recyclerHistory() {
+        adapterHistory = AdapterHistory(color, this, this)
         val recycler = binding.recyclerHistory
         recycler.layoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -84,7 +93,7 @@ class MainActivity : AppCompatActivity() {
 
                     if (validationInternet(this)){
                         binding.progress.visibility = View.VISIBLE
-                        observer(LanguageData(0, from.str, to.str, text, ""))
+                        observer(LanguageData(0, from.str, to.str, text, "", "", ""))
                     }
                     else { binding.textTo.text = "Verifique sua conexão com a internet!" }
                 }
@@ -106,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             val text = binding.textFrom.text
             val from = Translator.Language.valueOf(binding.tilFrom.text)
             if (text.isEmpty() || text.isBlank()){
-                toast("Digite uma palavra")
+                toast("Digite ou fale uma palavra")
             }
             else{
                 playVoice.init(this, text, from.str)
@@ -127,17 +136,42 @@ class MainActivity : AppCompatActivity() {
         binding.icSave.setOnClickListener {
 
             val textFrom = binding.textFrom.text
+            val hour = captureHourDate.captureHoraCurrent()
+            val date = captureHourDate.captureDateCurrent()
 
             if (textFrom.isEmpty() || textFrom.isBlank()){
                 toast("Não há palavra para salvar")
             }
             else{
                 val textTo = binding.textTo.text.toString()
-                val to = Translator.Language.valueOf(binding.tilTo.text)
                 val from = Translator.Language.valueOf(binding.tilFrom.text)
-                saveTranslate(LanguageData(0, to.name, from.name, textFrom, textTo))
+                val to = Translator.Language.valueOf(binding.tilTo.text)
+                saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo, hour, date))
             }
         }
+
+        binding.imageDrop.setOnClickListener {
+
+            if (value == 0) {
+                binding.recyclerHistory.visibility = View.GONE
+                binding.toolbar3.visibility = View.GONE
+                binding.imageDrop.setImageResource(R.drawable.ic_down)
+                if (size != 0){
+                    binding.textTranslateHere.visibility = View.INVISIBLE
+                }
+                value = 1
+            }
+            else {
+                binding.recyclerHistory.visibility = View.VISIBLE
+                binding.toolbar3.visibility = View.VISIBLE
+                binding.imageDrop.setImageResource(R.drawable.ic_up)
+                if (size == 0){
+                    binding.textTranslateHere.visibility = View.VISIBLE
+                }
+                value = 0
+            }
+        }
+
     }
 
     private fun saveTranslate(languageData: LanguageData) {
@@ -194,8 +228,13 @@ class MainActivity : AppCompatActivity() {
     private fun observeHistory(){
         viewModelApi.consultHistory()
         viewModelApi.history.observe(this){
-            if (it != null) {
+            if (it.size != 0) {
+                binding.textTranslateHere.visibility = View.INVISIBLE
                 adapterHistory.updateHistory(it)
+                size = it.size
+            }
+            else {
+                binding.textTranslateHere.visibility = View.VISIBLE
             }
         }
     }
@@ -256,6 +295,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun toast(message: String){
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun clickClose(id: Int, position: Int) {
+        viewModelApi.removeHistory(id)
+        adapterHistory.updateRemoveItem(position)
+    }
+
+    override fun clickBox(id: Int) {
+        toast("Falta implementar este Click!")
+    }
+
+    override fun notification(value: Int) {
+        if (value != 0) {
+            binding.textTranslateHere.visibility = View.INVISIBLE
+        }
+        else{
+            binding.textTranslateHere.visibility = View.VISIBLE
+        }
     }
 
 }

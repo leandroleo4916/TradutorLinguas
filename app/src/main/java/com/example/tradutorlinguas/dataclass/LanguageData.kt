@@ -6,4 +6,6 @@ data class LanguageData(
         val to: String,
         val textFrom: String,
         val textTo: String,
+        val hour: String,
+        val date: String
 )

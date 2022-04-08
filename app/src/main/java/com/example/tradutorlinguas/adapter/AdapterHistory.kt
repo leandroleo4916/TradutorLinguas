@@ -43,6 +43,8 @@ class AdapterHistory (private val color: GetColor, private val clickItem: IClick
         private val itemTextTo: TextView = itemView.findViewById(R.id.tv_translate_to)
         private val itemBox: ConstraintLayout = itemView.findViewById(R.id.box_employee)
         private val imageClose: ImageView = itemView.findViewById(R.id.image_close)
+        private val imageFrom: ImageView = itemView.findViewById(R.id.image_circle1)
+        private val imageTo: ImageView = itemView.findViewById(R.id.image_circle2)
 
         init {
             itemBox.setOnClickListener(this)
@@ -50,13 +52,25 @@ class AdapterHistory (private val color: GetColor, private val clickItem: IClick
         }
 
         fun bindHistory(history: LanguageData, position: Int){
+
             itemTextLangFrom.text = history.from
             itemTextLangTo.text = history.to
             itemTextFrom.text = history.textFrom
             itemTextTo.text = history.textTo
             itemBox.setBackgroundResource(color.getColor(position))
-            if (listHistory.size == position) {
-                itemBox.setPadding(0, 10, 0, 0)
+            when (history.from) {
+                "Português" -> { imageFrom.setImageResource(R.drawable.brasil) }
+                "Inglês" -> { imageFrom.setImageResource(R.drawable.eua) }
+                "Francês" -> { imageFrom.setImageResource(R.drawable.france) }
+                "Italiano" -> { imageFrom.setImageResource(R.drawable.italy) }
+                "Espanhol" -> { imageFrom.setImageResource(R.drawable.espan) }
+            }
+            when (history.to) {
+                "Português" -> { imageTo.setImageResource(R.drawable.brasil) }
+                "Inglês" -> { imageTo.setImageResource(R.drawable.eua) }
+                "Francês" -> { imageTo.setImageResource(R.drawable.france) }
+                "Italiano" -> { imageTo.setImageResource(R.drawable.italy) }
+                "Espanhol" -> { imageTo.setImageResource(R.drawable.espan) }
             }
         }
 

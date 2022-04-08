@@ -4,12 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="130dp"
-    android:layout_height="115dp"
+    android:layout_height="120dp"
     android:layout_marginStart="10dp"
     android:layout_marginTop="2dp"
     android:paddingEnd="4dp"
     android:paddingStart="6dp"
-    android:paddingTop="6dp"
+    android:paddingTop="4dp"
     android:background="@drawable/back_fundo_orange"
     android:id="@+id/box_employee">
 
@@ -32,71 +32,73 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_recycler_from"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:text="De:"
-        android:textSize="14sp"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_circle1"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:foregroundGravity="center"
+        android:src="@drawable/eua"
+        app:layout_constraintCircleRadius="50dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_circle2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="2dp"
+        android:foregroundGravity="center"
+        android:src="@drawable/brasil"
+        app:layout_constraintCircleRadius="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/tv_lang_from"
-        android:layout_width="72sp"
+        android:layout_width="60sp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
         android:singleLine="true"
+        android:layout_marginStart="4dp"
         android:text="Português"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_recycler_from"
-        app:layout_constraintStart_toEndOf="@+id/tv_recycler_from"
-        app:layout_constraintTop_toTopOf="@+id/tv_recycler_from" />
+        app:layout_constraintBottom_toBottomOf="@+id/image_circle1"
+        app:layout_constraintStart_toEndOf="@+id/image_circle1"
+        app:layout_constraintTop_toTopOf="@+id/image_circle1" />
 
     <TextView
         android:id="@+id/tv_translate_from"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textStyle="bold"
-        android:layout_marginTop=""
         android:text="Exemplo de texto"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_recycler_from" />
-
-    <TextView
-        android:id="@+id/tv_recycler_to"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:text="Para:"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" />
+        app:layout_constraintTop_toBottomOf="@+id/image_circle1" />
 
     <TextView
         android:id="@+id/tv_lang_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
         android:singleLine="true"
+        android:layout_marginStart="4dp"
         android:text="Inglês"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_recycler_to"
-        app:layout_constraintStart_toEndOf="@+id/tv_recycler_to"
-        app:layout_constraintTop_toTopOf="@+id/tv_recycler_to" />
+        app:layout_constraintBottom_toBottomOf="@+id/image_circle2"
+        app:layout_constraintStart_toEndOf="@+id/image_circle2"
+        app:layout_constraintTop_toTopOf="@+id/image_circle2" />
 
     <TextView
         android:id="@+id/tv_translate_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
-        android:textStyle="bold"
         android:text="Exemplo de texto"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_recycler_to" />
+        app:layout_constraintTop_toBottomOf="@+id/image_circle2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

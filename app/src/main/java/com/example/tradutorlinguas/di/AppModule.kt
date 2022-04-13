@@ -1,11 +1,10 @@
 package com.example.tradutorlinguas.di
 
-import com.example.tradutorlinguas.adapter.AdapterHistory
 import com.example.tradutorlinguas.dbhistory.DataBaseHistory
-import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.repository.RepositoryHistory
+import com.example.tradutorlinguas.util.CaptureBand
 import com.example.tradutorlinguas.util.CaptureHourDate
 import com.example.tradutorlinguas.util.GetColor
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
@@ -33,5 +32,8 @@ val captureHourDate = module {
 val getColor = module {
     factory { GetColor() }
 }
+val getFlag = module {
+    factory { CaptureBand() }
+}
 val appModules = listOf( repositoryModule, viewModelModule, playVoice,
-    dataBase, repositoryHistory, captureHourDate, getColor)
+    dataBase, repositoryHistory, captureHourDate, getColor, getFlag)

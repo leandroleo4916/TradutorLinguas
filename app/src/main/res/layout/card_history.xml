@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginTop="2dp"
+    android:padding="15dp"
+    android:id="@+id/box_employee">
+
+    <ImageView
+        android:id="@+id/image_play_card_from"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/ic_sound"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/image_play_card_to"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_sound"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        tools:ignore="ContentDescription" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/purple_500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_card_from"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:foregroundGravity="center"
+        android:src="@drawable/brasil"
+        app:layout_constraintCircleRadius="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image_card_to"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="8dp"
+        android:foregroundGravity="center"
+        android:src="@drawable/eua"
+        app:layout_constraintCircleRadius="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/tv_lang_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Português"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/image_card_from"
+        app:layout_constraintStart_toEndOf="@+id/image_card_from"
+        app:layout_constraintTop_toTopOf="@+id/image_card_from" />
+
+    <TextView
+        android:id="@+id/tv_translate_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Exemplo de texto"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_card_from" />
+
+    <TextView
+        android:id="@+id/tv_lang_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Inglês"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/image_card_to"
+        app:layout_constraintStart_toEndOf="@+id/image_card_to"
+        app:layout_constraintTop_toTopOf="@+id/image_card_to" />
+
+    <TextView
+        android:id="@+id/tv_translate_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Exemplo de texto"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image_card_to" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.example.tradutorlinguas.adapter
 
-import android.app.Notification
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +11,13 @@ import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
+import com.example.tradutorlinguas.util.CaptureBand
 import com.example.tradutorlinguas.util.GetColor
-import org.koin.core.scope.Scope
 
-class AdapterHistory (private val color: GetColor, private val clickItem: IClickItemRecycler,
-                      private val notification: INotification):
+class AdapterHistory (private val color: GetColor,
+                      private val clickItem: IClickItemRecycler,
+                      private val notification: INotification,
+                      private val capture: CaptureBand):
     RecyclerView.Adapter<AdapterHistory.ViewHolderHistory>() {
 
     private var listHistory: ArrayList<LanguageData> = arrayListOf()
@@ -58,27 +59,19 @@ class AdapterHistory (private val color: GetColor, private val clickItem: IClick
             itemTextFrom.text = history.textFrom
             itemTextTo.text = history.textTo
             itemBox.setBackgroundResource(color.getColor(position))
-            when (history.from) {
-                "Português" -> { imageFrom.setImageResource(R.drawable.brasil) }
-                "Inglês" -> { imageFrom.setImageResource(R.drawable.eua) }
-                "Francês" -> { imageFrom.setImageResource(R.drawable.france) }
-                "Italiano" -> { imageFrom.setImageResource(R.drawable.italy) }
-                "Espanhol" -> { imageFrom.setImageResource(R.drawable.espan) }
-            }
-            when (history.to) {
-                "Português" -> { imageTo.setImageResource(R.drawable.brasil) }
-                "Inglês" -> { imageTo.setImageResource(R.drawable.eua) }
-                "Francês" -> { imageTo.setImageResource(R.drawable.france) }
-                "Italiano" -> { imageTo.setImageResource(R.drawable.italy) }
-                "Espanhol" -> { imageTo.setImageResource(R.drawable.espan) }
-            }
+
+            val imageF = capture.capture(history.from)
+            imageFrom.setImageResource(imageF)
+            val imageT = capture.capture(history.to)
+            imageFrom.setImageResource(imageT)
+
         }
 
         override fun onClick(view: View?) {
             val position = adapterPosition
             when (view){
                 imageClose -> clickItem.clickClose(listHistory[position].id, position)
-                itemBox -> clickItem.clickBox(listHistory[position].id)
+                itemBox -> clickItem.clickBox(listHistory[position])
             }
         }
     }

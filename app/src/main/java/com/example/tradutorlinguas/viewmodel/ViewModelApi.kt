@@ -28,7 +28,6 @@ class ViewModelApi(private val translate: Translator,
     fun saveHistory(history: LanguageData): Boolean{
         return repositoryHistory.saveEmployee(history)
     }
-
     fun consultHistory(){
         history.value =  repositoryHistory.historyList()
     }

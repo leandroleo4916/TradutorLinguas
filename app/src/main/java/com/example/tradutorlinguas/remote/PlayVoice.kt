@@ -9,8 +9,8 @@ class PlayVoice {
 
     private var textToSpeech: TextToSpeech? = null
 
-    fun init(context: Context, str: String, lang: String){
-        try { textToSpeech = TextToSpeech(context, onInitListener(str, lang)) }
+    fun init(context: Context, text: String, lang: String){
+        try { textToSpeech = TextToSpeech(context, onInitListener(text, lang)) }
         catch (e: Exception){ }
     }
 

@@ -10,8 +10,13 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -24,6 +29,7 @@ import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
+import com.example.tradutorlinguas.util.CaptureBand
 import com.example.tradutorlinguas.util.CaptureHourDate
 import com.example.tradutorlinguas.util.GetColor
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
@@ -39,7 +45,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private val playVoice: PlayVoice by inject()
     private lateinit var adapterHistory: AdapterHistory
     private val captureHourDate: CaptureHourDate by inject()
-    private val color: GetColor = GetColor()
+    private val color: GetColor by inject()
+    private val capture: CaptureBand by inject()
     private val viewModelApi: ViewModelApi by viewModel()
     private val permissionCode = 1000
     private var value = 0
@@ -57,7 +64,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     }
 
     private fun recyclerHistory() {
-        adapterHistory = AdapterHistory(color, this, this)
+        adapterHistory = AdapterHistory(color, this, this, capture)
         val recycler = binding.recyclerHistory
         recycler.layoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -149,29 +156,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo, hour, date))
             }
         }
-
-        binding.imageDrop.setOnClickListener {
-
-            if (value == 0) {
-                binding.recyclerHistory.visibility = View.GONE
-                binding.toolbar3.visibility = View.GONE
-                binding.imageDrop.setImageResource(R.drawable.ic_down)
-                if (size != 0){
-                    binding.textTranslateHere.visibility = View.INVISIBLE
-                }
-                value = 1
-            }
-            else {
-                binding.recyclerHistory.visibility = View.VISIBLE
-                binding.toolbar3.visibility = View.VISIBLE
-                binding.imageDrop.setImageResource(R.drawable.ic_up)
-                if (size == 0){
-                    binding.textTranslateHere.visibility = View.VISIBLE
-                }
-                value = 0
-            }
-        }
-
     }
 
     private fun saveTranslate(languageData: LanguageData) {
@@ -302,8 +286,39 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         adapterHistory.updateRemoveItem(position)
     }
 
-    override fun clickBox(id: Int) {
-        toast("Falta implementar este Click!")
+    override fun clickBox(item: LanguageData) {
+
+        val inflate = layoutInflater.inflate(R.layout.card_history, null)
+
+        val imageFrom = inflate.findViewById<ImageView>(R.id.image_card_from)
+        val imageTo = inflate.findViewById<ImageView>(R.id.image_card_to)
+        val imagePlayFrom = inflate.findViewById<ImageView>(R.id.image_play_card_from)
+        val imagePlayTo = inflate.findViewById<ImageView>(R.id.image_play_card_to)
+        val textLangFrom = inflate.findViewById<TextView>(R.id.tv_lang_from)
+        val textLangTo = inflate.findViewById<TextView>(R.id.tv_lang_to)
+        val textFrom = inflate.findViewById<TextView>(R.id.tv_translate_from)
+        val textTo = inflate.findViewById<TextView>(R.id.tv_translate_to)
+
+        imageFrom.setImageResource(capture.capture(item.from))
+        imageTo.setImageResource(capture.capture(item.to))
+        textFrom.text = item.textFrom
+        textTo.text = item.textTo
+        textLangFrom.text = item.from
+        textLangTo.text = item.to
+
+        val langFrom = Translator.Language.valueOf(item.from)
+        val langTo = Translator.Language.valueOf(item.to)
+
+        imagePlayFrom.setOnClickListener {
+            playVoice.init(this, item.textFrom, langFrom.str)
+        }
+        imagePlayTo.setOnClickListener {
+            playVoice.init(this, item.textTo, langTo.str)
+        }
+
+        val alertDialog = createDialog("Histórico", "Fechar")
+        alertDialog.setView(inflate)
+        alertDialog.create().show()
     }
 
     override fun notification(value: Int) {
@@ -313,6 +328,14 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         else{
             binding.textTranslateHere.visibility = View.VISIBLE
         }
+    }
+
+    private fun createDialog(title: String, close: String): AlertDialog.Builder {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(title)
+        builder.setCancelable(false)
+        builder.setPositiveButton(close){ _,_ -> }
+        return builder
     }
 
 }

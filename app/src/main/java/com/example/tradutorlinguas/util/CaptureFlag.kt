@@ -2,7 +2,7 @@ package com.example.tradutorlinguas.util
 
 import com.example.tradutorlinguas.R
 
-class CaptureBand {
+class CaptureFlag {
     fun capture(value: String): Int{
         return when(value){
             "Português" -> { R.drawable.brasil }

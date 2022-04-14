@@ -11,13 +11,13 @@ import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
-import com.example.tradutorlinguas.util.CaptureBand
+import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.util.GetColor
 
 class AdapterHistory (private val color: GetColor,
                       private val clickItem: IClickItemRecycler,
                       private val notification: INotification,
-                      private val capture: CaptureBand):
+                      private val capture: CaptureFlag):
     RecyclerView.Adapter<AdapterHistory.ViewHolderHistory>() {
 
     private var listHistory: ArrayList<LanguageData> = arrayListOf()
@@ -63,7 +63,7 @@ class AdapterHistory (private val color: GetColor,
             val imageF = capture.capture(history.from)
             imageFrom.setImageResource(imageF)
             val imageT = capture.capture(history.to)
-            imageFrom.setImageResource(imageT)
+            imageTo.setImageResource(imageT)
 
         }
 
@@ -71,7 +71,7 @@ class AdapterHistory (private val color: GetColor,
             val position = adapterPosition
             when (view){
                 imageClose -> clickItem.clickClose(listHistory[position].id, position)
-                itemBox -> clickItem.clickBox(listHistory[position])
+                itemBox -> clickItem.clickBox(listHistory[position], position)
             }
         }
     }
@@ -92,7 +92,5 @@ class AdapterHistory (private val color: GetColor,
 
         val size = listHistory.size
         notification.notification(size)
-
     }
-
 }

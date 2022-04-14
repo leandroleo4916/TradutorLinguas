@@ -10,13 +10,10 @@ import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -29,7 +26,7 @@ import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
-import com.example.tradutorlinguas.util.CaptureBand
+import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.util.CaptureHourDate
 import com.example.tradutorlinguas.util.GetColor
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
@@ -46,7 +43,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private lateinit var adapterHistory: AdapterHistory
     private val captureHourDate: CaptureHourDate by inject()
     private val color: GetColor by inject()
-    private val capture: CaptureBand by inject()
+    private val capture: CaptureFlag by inject()
+    private val createViewDialog: CreateDialog by inject()
     private val viewModelApi: ViewModelApi by viewModel()
     private val permissionCode = 1000
     private var value = 0
@@ -81,12 +79,42 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             textViewTo.setAdapter(adapter)
             textViewFrom.setText(Translator.Language.Português.name, false)
             textViewTo.setText(Translator.Language.Inglês.name, false)
+
+            imgSwap.setOnClickListener {
+                val from = binding.tilFrom.text
+                binding.textViewFrom.setText(binding.tilTo.text, false)
+                binding.textViewTo.setText(from, false)
+            }
+
+            icVoz.setOnClickListener { permissionVoice() }
+
+            icSave.setOnClickListener {
+
+                val textFrom = binding.textFrom.text
+                val hour = captureHourDate.captureHoraCurrent()
+                val date = captureHourDate.captureDateCurrent()
+
+                if (textFrom.isEmpty() || textFrom.isBlank()){
+                    toast("Não há palavra para salvar")
+                }
+                else{
+                    val textTo = binding.textTo.text.toString()
+                    val from = Translator.Language.valueOf(binding.tilFrom.text)
+                    val to = Translator.Language.valueOf(binding.tilTo.text)
+                    saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo, hour, date))
+                }
+            }
         }
 
-        binding.imgSwap.setOnClickListener {
-            val from = binding.tilFrom.text
-            binding.textViewFrom.setText(binding.tilTo.text, false)
-            binding.textViewTo.setText(from, false)
+        binding.icPlayTo.setOnClickListener {
+            val text = binding.textTo.text.toString()
+            val to = Translator.Language.valueOf(binding.tilTo.text)
+            if (text.isEmpty() || text.isBlank() || text == "Tradução"){
+                toast("Não há palavra para traduzir")
+            }
+            else{
+                playVoice.init(this, text, to.str)
+            }
         }
 
         binding.textFrom.editText?.doAfterTextChanged {
@@ -102,58 +130,16 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                         binding.progress.visibility = View.VISIBLE
                         observer(LanguageData(0, from.str, to.str, text, "", "", ""))
                     }
-                    else { binding.textTo.text = "Verifique sua conexão com a internet!" }
+                    else { binding.textTo.text = getString(R.string.verifique_internet) }
                 }
                 else{
-                    binding.textTo.text = "Tradução"
+                    binding.textTo.text = getString(R.string.traducao)
                     binding.icSave.setImageResource(R.drawable.ic_save_gray)
                     binding.icPlayFrom.setImageResource(R.drawable.ic_sound_gray)
                     binding.icPlayTo.setImageResource(R.drawable.ic_sound_gray)
                 }
             }catch (e: Exception){
                 toast("Erro na tradução, tente novamente!")
-            }
-
-        }
-
-        binding.icVoz.setOnClickListener { permissionVoice() }
-
-        binding.icPlayFrom.setOnClickListener {
-            val text = binding.textFrom.text
-            val from = Translator.Language.valueOf(binding.tilFrom.text)
-            if (text.isEmpty() || text.isBlank()){
-                toast("Digite ou fale uma palavra")
-            }
-            else{
-                playVoice.init(this, text, from.str)
-            }
-        }
-
-        binding.icPlayTo.setOnClickListener {
-            val text = binding.textTo.text.toString()
-            val to = Translator.Language.valueOf(binding.tilTo.text)
-            if (text.isEmpty() || text.isBlank() || text == "Tradução"){
-                toast("Não há palavra para traduzir")
-            }
-            else{
-                playVoice.init(this, text, to.str)
-            }
-        }
-
-        binding.icSave.setOnClickListener {
-
-            val textFrom = binding.textFrom.text
-            val hour = captureHourDate.captureHoraCurrent()
-            val date = captureHourDate.captureDateCurrent()
-
-            if (textFrom.isEmpty() || textFrom.isBlank()){
-                toast("Não há palavra para salvar")
-            }
-            else{
-                val textTo = binding.textTo.text.toString()
-                val from = Translator.Language.valueOf(binding.tilFrom.text)
-                val to = Translator.Language.valueOf(binding.tilTo.text)
-                saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo, hour, date))
             }
         }
     }
@@ -286,7 +272,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         adapterHistory.updateRemoveItem(position)
     }
 
-    override fun clickBox(item: LanguageData) {
+    override fun clickBox(item: LanguageData, position: Int) {
 
         val inflate = layoutInflater.inflate(R.layout.card_history, null)
 
@@ -316,7 +302,13 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             playVoice.init(this, item.textTo, langTo.str)
         }
 
-        val alertDialog = createDialog("Histórico", "Fechar")
+        val alertDialog = createViewDialog.createDialog(
+                "Salvo às ${item.hour}, dia ${item.date}", this)
+        alertDialog.setPositiveButton("Fechar"){ _,_ -> }
+        alertDialog.setNegativeButton("Exluir"){ _,_ ->
+            viewModelApi.removeHistory(item.id)
+            adapterHistory.updateRemoveItem(position)
+        }
         alertDialog.setView(inflate)
         alertDialog.create().show()
     }
@@ -328,14 +320,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         else{
             binding.textTranslateHere.visibility = View.VISIBLE
         }
-    }
-
-    private fun createDialog(title: String, close: String): AlertDialog.Builder {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(title)
-        builder.setCancelable(false)
-        builder.setPositiveButton(close){ _,_ -> }
-        return builder
     }
 
 }

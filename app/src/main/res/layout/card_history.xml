@@ -45,8 +45,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_card_from"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:foregroundGravity="center"
         android:src="@drawable/brasil"
         app:layout_constraintCircleRadius="50dp"
@@ -56,8 +56,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_card_to"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_marginTop="8dp"
         android:foregroundGravity="center"
         android:src="@drawable/eua"
@@ -72,7 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Português"
-        android:textSize="14sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/image_card_from"
         app:layout_constraintStart_toEndOf="@+id/image_card_from"
         app:layout_constraintTop_toTopOf="@+id/image_card_from" />
@@ -82,9 +82,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="4dp"
         android:text="Exemplo de texto"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/toolbar2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_card_from" />
 
@@ -94,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Inglês"
-        android:textSize="14sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/image_card_to"
         app:layout_constraintStart_toEndOf="@+id/image_card_to"
         app:layout_constraintTop_toTopOf="@+id/image_card_to" />
@@ -103,10 +106,11 @@
         android:id="@+id/tv_translate_to"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="4dp"
         android:text="Exemplo de texto"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_card_to" />
 

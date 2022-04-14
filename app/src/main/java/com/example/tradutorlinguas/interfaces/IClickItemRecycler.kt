@@ -4,5 +4,5 @@ import com.example.tradutorlinguas.dataclass.LanguageData
 
 interface IClickItemRecycler {
     fun clickClose(id: Int, position: Int)
-    fun clickBox(item: LanguageData)
+    fun clickBox(item: LanguageData, position: Int)
 }

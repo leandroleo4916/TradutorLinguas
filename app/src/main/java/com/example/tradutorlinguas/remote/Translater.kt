@@ -38,6 +38,6 @@ class Translator {
     enum class Language (val str: String) {
         Inglês("en"), Português("pt"), Espanhol("es"), Françês("fr"),
         Italiano("it"), Árabe("ar"), Dinamarquês("da"), Holandês("nl"),
-        Grego("el"), Turco("tr"), Alemão("de")
+        Grego("el"), Alemão("de")
     }
 }

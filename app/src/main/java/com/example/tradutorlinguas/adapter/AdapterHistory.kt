@@ -58,7 +58,7 @@ class AdapterHistory (private val color: GetColor,
             itemTextLangTo.text = history.to
             itemTextFrom.text = history.textFrom
             itemTextTo.text = history.textTo
-            itemBox.setBackgroundResource(color.getColor(position))
+            //itemBox.setBackgroundResource(color.getColor(position))
 
             val imageF = capture.capture(history.from)
             imageFrom.setImageResource(imageF)

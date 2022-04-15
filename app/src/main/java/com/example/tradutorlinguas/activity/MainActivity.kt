@@ -120,6 +120,17 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             }
         }
 
+        binding.icPlayFrom.setOnClickListener {
+            val text = binding.textFrom.text
+            val from = Translator.Language.valueOf(binding.tilFrom.text)
+            if (text.isEmpty() || text.isBlank()){
+                toast("Digite ou fale uma palavra")
+            }
+            else{
+                playVoice.init(this, text, from.str)
+            }
+        }
+
         binding.textFrom.editText?.doAfterTextChanged {
 
             try {

@@ -10,7 +10,7 @@
     android:paddingEnd="4dp"
     android:paddingStart="6dp"
     android:paddingTop="4dp"
-    android:background="@drawable/back_fundo_white"
+    android:background="@drawable/back_fundo_dark"
     android:id="@+id/box_employee">
 
     <ImageView
@@ -26,7 +26,8 @@
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/purple_500"
+        android:background="#77F1F1F1"
+        android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +47,7 @@
         android:id="@+id/image_circle2"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="3dp"
         android:src="@drawable/brasil"
         app:layout_constraintCircleRadius="50dp"
         app:layout_constraintStart_toStartOf="parent"

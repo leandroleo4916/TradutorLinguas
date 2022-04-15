@@ -6,9 +6,9 @@ import android.widget.PopupMenu
 import com.example.tradutorlinguas.R
 
 class CreateMenu {
-    fun createMenu(context: Context, imageViewOption: ImageView): PopupMenu {
+    fun createMenu(context: Context, imageViewOption: ImageView, menu: Int): PopupMenu {
         val popMenu = PopupMenu(context, imageViewOption)
-        popMenu.menuInflater.inflate(R.menu.option, popMenu.menu)
+        popMenu.menuInflater.inflate(menu, popMenu.menu)
         return popMenu
     }
 }

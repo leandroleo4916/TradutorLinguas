@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private val permissionCode = 1000
     private var value = 0
     private var size = 0
+    private var valueView = 0
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        showMenu()
         listener()
         recyclerHistory()
         observeHistory()
@@ -143,30 +145,65 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 toast("Erro na tradução, tente novamente!")
             }
         }
+    }
 
+    private fun showMenu(){
         binding.imageViewOption.setOnClickListener {
-            val menu = createViewMenu.createMenu(this, binding.imageViewOption)
-            menu.setOnMenuItemClickListener { item ->
-                when (item!!.itemId) {
-                    R.id.ocultar_historico -> {
-                        binding.recyclerHistory.visibility = View.GONE
-                        binding.textTranslateHere.visibility = View.GONE
-                    }
-                    R.id.excluir_tudo -> {
-                        val listHistory = viewModelApi.history.value
-                        if (listHistory != null) {
-                            if (listHistory.size != 0) {
-                                viewModelApi.removeAll(listHistory)
-                                adapterHistory.updateRemoveAll(listHistory)
-                            }
-                            else{ toast("Não tem arquivos para excluir!") }
+
+            if (valueView == 0){
+                val menu = createViewMenu.createMenu(this, binding.imageViewOption, R.menu.option)
+                menu.setOnMenuItemClickListener { item ->
+                    when (item!!.itemId) {
+                        R.id.ocultar_historico -> {
+                            binding.recyclerHistory.visibility = View.GONE
+                            binding.textTranslateHere.visibility = View.GONE
+                            valueView = 1
                         }
+                        R.id.excluir_tudo -> {
+                            removeAllHistory()
+                        }
+                        R.id.sair -> { finish() }
                     }
-                    R.id.sair -> { finish() }
+                    true
                 }
-                true
+                menu.show()
             }
-            menu.show()
+
+            else {
+                val menu = createViewMenu.createMenu(this, binding.imageViewOption, R.menu.option_v2)
+                menu.setOnMenuItemClickListener { item ->
+                    when (item!!.itemId) {
+                        R.id.mostrar_historico -> {
+                            val size = viewModelApi.history.value?.size ?: 0
+                            if (size != 0) {
+                                binding.textTranslateHere.visibility = View.GONE
+                            }
+                            else {
+                                binding.textTranslateHere.visibility = View.VISIBLE
+                            }
+                            binding.recyclerHistory.visibility = View.VISIBLE
+                            valueView = 0
+                        }
+                        R.id.excluir_tudo -> {
+                            removeAllHistory()
+                        }
+                        R.id.sair -> { finish() }
+                    }
+                    true
+                }
+                menu.show()
+            }
+        }
+    }
+
+    private fun removeAllHistory(){
+        val listHistory = viewModelApi.history.value
+        if (listHistory != null) {
+            if (listHistory.size != 0) {
+                viewModelApi.removeAll(listHistory)
+                adapterHistory.updateRemoveAll(listHistory)
+            }
+            else{ toast("Não tem arquivos para excluir!") }
         }
     }
 
@@ -275,7 +312,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
         try {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, 
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                          RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             }
@@ -284,9 +321,9 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 startActivityForResult(intent, SPEECH_REQUEST_CODE)
             }
             else { toast("Erro ao gravar") }
-            
+
         }catch(e: Exception) {}
-       
+
     }
 
     override fun clickClose(id: Int, position: Int) {
@@ -336,8 +373,17 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     }
 
     override fun notification(value: Int) {
-        if (value != 0) { binding.textTranslateHere.visibility = View.INVISIBLE }
-        else{ binding.textTranslateHere.visibility = View.VISIBLE }
+        if (value != 0) {
+            binding.textTranslateHere.visibility = View.GONE
+        }
+        else {
+            if (valueView != 0){
+                binding.textTranslateHere.visibility = View.GONE
+            }
+            else {
+                binding.textTranslateHere.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun toast(message: String){

@@ -34,5 +34,8 @@ class ViewModelApi(private val translate: Translator,
     fun removeHistory(id: Int){
         repositoryHistory.removeHistory(id)
     }
+    fun removeAll(item: ArrayList<LanguageData>){
+        for (i in item){ repositoryHistory.removeAll(i.id) }
+    }
 
 }

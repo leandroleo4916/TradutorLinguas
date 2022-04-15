@@ -1,6 +1,7 @@
 package com.example.tradutorlinguas.di
 
 import com.example.tradutorlinguas.activity.CreateDialog
+import com.example.tradutorlinguas.activity.CreateMenu
 import com.example.tradutorlinguas.dbhistory.DataBaseHistory
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
@@ -39,5 +40,8 @@ val getFlag = module {
 val moduleCreateDialog = module {
     factory { CreateDialog() }
 }
-val appModules = listOf( repositoryModule, viewModelModule, playVoice,
+val moduleCreateMenu = module {
+    factory { CreateMenu() }
+}
+val appModules = listOf( repositoryModule, viewModelModule, playVoice, moduleCreateMenu,
     dataBase, repositoryHistory, captureHourDate, getColor, getFlag, moduleCreateDialog)

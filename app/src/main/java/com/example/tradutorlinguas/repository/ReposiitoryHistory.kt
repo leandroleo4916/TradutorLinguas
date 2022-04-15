@@ -93,6 +93,17 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
         } catch (e: Exception) {  }
     }
 
+    fun removeAll(id: Int) {
+
+        try {
+            val selection = ConstantsHistory.HISTORY.COLUMNS.ID + " = ?"
+            val args = arrayOf(id.toString())
+
+            dbWrite.delete(tableName, selection, args)
+
+        } catch (e: Exception) {  }
+    }
+
     /*
 
     private fun editEmployee(employee: EmployeeEntity): String {

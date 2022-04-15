@@ -89,7 +89,21 @@ class AdapterHistory (private val color: GetColor,
     fun updateRemoveItem(position: Int){
         listHistory.removeAt(position)
         notifyItemRemoved(position)
+        notificationRemove()
+    }
 
+    fun updateRemoveAll(list: ArrayList<LanguageData>) {
+        listHistory.removeAll(list)
+        if (list.size >= 2){
+            notifyItemRangeRemoved(0, list.size)
+        }
+        else {
+            notifyItemRemoved(0)
+        }
+        notificationRemove()
+    }
+
+    private fun notificationRemove(){
         val size = listHistory.size
         notification.notification(size)
     }

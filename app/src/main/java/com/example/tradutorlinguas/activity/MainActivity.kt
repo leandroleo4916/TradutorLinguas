@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private val color: GetColor by inject()
     private val capture: CaptureFlag by inject()
     private val createViewDialog: CreateDialog by inject()
+    private val createViewMenu: CreateMenu by inject()
     private val viewModelApi: ViewModelApi by viewModel()
     private val permissionCode = 1000
     private var value = 0
@@ -142,6 +143,31 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 toast("Erro na tradução, tente novamente!")
             }
         }
+
+        binding.imageViewOption.setOnClickListener {
+            val menu = createViewMenu.createMenu(this, binding.imageViewOption)
+            menu.setOnMenuItemClickListener { item ->
+                when (item!!.itemId) {
+                    R.id.ocultar_historico -> {
+                        binding.recyclerHistory.visibility = View.GONE
+                        binding.textTranslateHere.visibility = View.GONE
+                    }
+                    R.id.excluir_tudo -> {
+                        val listHistory = viewModelApi.history.value
+                        if (listHistory != null) {
+                            if (listHistory.size != 0) {
+                                viewModelApi.removeAll(listHistory)
+                                adapterHistory.updateRemoveAll(listHistory)
+                            }
+                            else{ toast("Não tem arquivos para excluir!") }
+                        }
+                    }
+                    R.id.sair -> { finish() }
+                }
+                true
+            }
+            menu.show()
+        }
     }
 
     private fun saveTranslate(languageData: LanguageData) {
@@ -199,7 +225,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         viewModelApi.consultHistory()
         viewModelApi.history.observe(this){
             if (it.size != 0) {
-                binding.textTranslateHere.visibility = View.INVISIBLE
+                binding.textTranslateHere.visibility = View.GONE
                 adapterHistory.updateHistory(it)
                 size = it.size
             }
@@ -263,10 +289,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
        
     }
 
-    private fun toast(message: String){
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
     override fun clickClose(id: Int, position: Int) {
         viewModelApi.removeHistory(id)
         adapterHistory.updateRemoveItem(position)
@@ -314,12 +336,12 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     }
 
     override fun notification(value: Int) {
-        if (value != 0) {
-            binding.textTranslateHere.visibility = View.INVISIBLE
-        }
-        else{
-            binding.textTranslateHere.visibility = View.VISIBLE
-        }
+        if (value != 0) { binding.textTranslateHere.visibility = View.INVISIBLE }
+        else{ binding.textTranslateHere.visibility = View.VISIBLE }
+    }
+
+    private fun toast(message: String){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
 }

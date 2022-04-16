@@ -15,6 +15,7 @@ class ViewModelApi(private val translate: Translator,
 
     val translateValue = MutableLiveData<String>()
     val history = MutableLiveData<ArrayList<LanguageData>>()
+    val historyById = MutableLiveData<LanguageData>()
 
     fun translate(language: LanguageData){
         CoroutineScope(Dispatchers.Main).launch {
@@ -30,6 +31,9 @@ class ViewModelApi(private val translate: Translator,
     }
     fun consultHistory(){
         history.value =  repositoryHistory.historyList()
+    }
+    fun consultHistoryById(id: String){
+        historyById.value =  repositoryHistory.historyById(id)
     }
     fun removeHistory(id: Int){
         repositoryHistory.removeHistory(id)

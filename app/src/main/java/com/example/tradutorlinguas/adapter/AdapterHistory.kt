@@ -71,7 +71,7 @@ class AdapterHistory (private val color: GetColor,
             val position = adapterPosition
             when (view){
                 imageClose -> clickItem.clickClose(listHistory[position].id, position)
-                itemBox -> clickItem.clickBox(listHistory[position], position)
+                itemBox -> clickItem.clickBox(listHistory[position].id)
             }
         }
     }

@@ -82,6 +82,56 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
         }
     }
 
+    @SuppressLint("Range")
+    fun historyById(id: String): LanguageData? {
+
+        var list: LanguageData? = null
+        try {
+            val cursor: Cursor
+            val projection = arrayOf(
+                    ConstantsHistory.HISTORY.COLUMNS.ID,
+                    ConstantsHistory.HISTORY.COLUMNS.LANGFROM,
+                    ConstantsHistory.HISTORY.COLUMNS.LANGTO,
+                    ConstantsHistory.HISTORY.COLUMNS.TEXTFROM,
+                    ConstantsHistory.HISTORY.COLUMNS.TEXTTO,
+                    ConstantsHistory.HISTORY.COLUMNS.HOUR,
+                    ConstantsHistory.HISTORY.COLUMNS.DATE)
+
+            val selection = ConstantsHistory.HISTORY.COLUMNS.ID + " = ?"
+            val args = arrayOf(id)
+
+            cursor = dbRead.query (tableName, projection, selection, args,
+                    null, null, null)
+
+            if (cursor != null && cursor.count > 0) {
+                while (cursor.moveToNext()) {
+
+                    val idInt = cursor.getInt(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.ID))
+                    val langFrom = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.LANGFROM))
+                    val langTo = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.LANGTO))
+                    val textFrom = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.TEXTFROM))
+                    val textTo = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.TEXTTO))
+                    val hour = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.HOUR))
+                    val date = cursor.getString(
+                            cursor.getColumnIndex(ConstantsHistory.HISTORY.COLUMNS.DATE))
+
+                    list = LanguageData(idInt, langFrom, langTo, textFrom, textTo, hour, date)
+                }
+            }
+            cursor?.close()
+            return list
+
+        } catch (e: Exception) {
+            return list
+        }
+    }
+
     fun removeHistory(id: Int) {
 
         try {

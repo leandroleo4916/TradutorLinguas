@@ -3,6 +3,8 @@ package com.example.tradutorlinguas.remote
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import androidx.annotation.NonNull
+import com.example.tradutorlinguas.databinding.ActivityHistoryBinding
 import java.util.*
 
 class PlayVoice {

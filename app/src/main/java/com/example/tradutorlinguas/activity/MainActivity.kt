@@ -11,8 +11,6 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -46,7 +44,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private val color: GetColor by inject()
     private val securityPreferences: SecurityPreferences by inject()
     private val capture: CaptureFlag by inject()
-    private val createViewDialog: CreateDialog by inject()
     private val createViewMenu: CreateMenu by inject()
     private val viewModelApi: ViewModelApi by viewModel()
     private val permissionCode = 1000
@@ -65,7 +62,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
         hideRecycler()
         showMenu()
-        firstApp()
         listener()
         recyclerHistory()
         observeHistory()
@@ -367,45 +363,13 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         adapterHistory.updateRemoveItem(position)
     }
 
-    override fun clickBox(item: LanguageData, position: Int) {
+    override fun clickBox(id: Int) {
 
-        val inflate = layoutInflater.inflate(R.layout.card_history, null)
-
-        val imageFrom = inflate.findViewById<ImageView>(R.id.image_card_from)
-        val imageTo = inflate.findViewById<ImageView>(R.id.image_card_to)
-        val imagePlayFrom = inflate.findViewById<ImageView>(R.id.image_play_card_from)
-        val imagePlayTo = inflate.findViewById<ImageView>(R.id.image_play_card_to)
-        val textLangFrom = inflate.findViewById<TextView>(R.id.tv_lang_from)
-        val textLangTo = inflate.findViewById<TextView>(R.id.tv_lang_to)
-        val textFrom = inflate.findViewById<TextView>(R.id.tv_translate_from)
-        val textTo = inflate.findViewById<TextView>(R.id.tv_translate_to)
-
-        imageFrom.setImageResource(capture.capture(item.from))
-        imageTo.setImageResource(capture.capture(item.to))
-        textFrom.text = item.textFrom
-        textTo.text = item.textTo
-        textLangFrom.text = item.from
-        textLangTo.text = item.to
-
-        val langFrom = Translator.Language.valueOf(item.from)
-        val langTo = Translator.Language.valueOf(item.to)
-
-        imagePlayFrom.setOnClickListener {
-            playVoice.init(this, item.textFrom, langFrom.str)
-        }
-        imagePlayTo.setOnClickListener {
-            playVoice.init(this, item.textTo, langTo.str)
-        }
-
-        val alertDialog = createViewDialog.createDialog(
-                "Salvo às ${item.hour}, dia ${item.date}", this)
-        alertDialog.setPositiveButton("Fechar"){ _,_ -> }
-        alertDialog.setNegativeButton("Exluir"){ _,_ ->
-            viewModelApi.removeHistory(item.id)
-            adapterHistory.updateRemoveItem(position)
-        }
-        alertDialog.setView(inflate)
-        alertDialog.create().show()
+        val bundle = Bundle()
+        val intent = Intent(this, HistoryActivity::class.java)
+        bundle.putString("id", id.toString())
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
     override fun notification(value: Int) {
@@ -425,13 +389,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private fun toast(message: String){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun firstApp(){
-        if (getValue == ""){
-            binding.textFrom.text = "Seja bem vindo!"
-            binding.textTo.text = "Be welcome!"
-        }
     }
 
 }

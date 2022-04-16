@@ -9,6 +9,7 @@ import com.example.tradutorlinguas.repository.RepositoryHistory
 import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.util.CaptureHourDate
 import com.example.tradutorlinguas.util.GetColor
+import com.example.tradutorlinguas.util.SecurityPreferences
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -43,5 +44,9 @@ val moduleCreateDialog = module {
 val moduleCreateMenu = module {
     factory { CreateMenu() }
 }
+val securityPreferences = module {
+    factory { SecurityPreferences(get()) }
+}
 val appModules = listOf( repositoryModule, viewModelModule, playVoice, moduleCreateMenu,
-    dataBase, repositoryHistory, captureHourDate, getColor, getFlag, moduleCreateDialog)
+        dataBase, repositoryHistory, captureHourDate, getColor, getFlag, moduleCreateDialog,
+        securityPreferences)

@@ -77,7 +77,6 @@
                 android:text="Suas traduções ficam aqui"
                 android:textColor="@color/white"
                 android:textSize="18sp"
-                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/constraint_collapsing"
                 app:layout_constraintEnd_toEndOf="@+id/constraint_collapsing"
                 app:layout_constraintStart_toStartOf="@+id/constraint_collapsing"

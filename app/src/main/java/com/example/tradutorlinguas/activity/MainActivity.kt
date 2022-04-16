@@ -29,6 +29,7 @@ import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.util.CaptureHourDate
 import com.example.tradutorlinguas.util.GetColor
+import com.example.tradutorlinguas.util.SecurityPreferences
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.ext.android.inject
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private lateinit var adapterHistory: AdapterHistory
     private val captureHourDate: CaptureHourDate by inject()
     private val color: GetColor by inject()
+    private val securityPreferences: SecurityPreferences by inject()
     private val capture: CaptureFlag by inject()
     private val createViewDialog: CreateDialog by inject()
     private val createViewMenu: CreateMenu by inject()
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private var value = 0
     private var size = 0
     private var valueView = 0
+    private var getValue = ""
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -58,10 +61,21 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        getValue = securityPreferences.getStoredString("value").toString()
+
+        hideRecycler()
         showMenu()
+        firstApp()
         listener()
         recyclerHistory()
         observeHistory()
+    }
+
+    private fun hideRecycler() {
+        if (getValue == "disable"){
+            binding.textTranslateHere.visibility = View.GONE
+            binding.recyclerHistory.visibility = View.GONE
+        }
     }
 
     private fun recyclerHistory() {
@@ -159,15 +173,19 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     }
 
     private fun showMenu(){
+
         binding.imageViewOption.setOnClickListener {
 
-            if (valueView == 0){
+            getValue = securityPreferences.getStoredString("value").toString()
+            if (getValue == "enable" || getValue == ""){
                 val menu = createViewMenu.createMenu(this, binding.imageViewOption, R.menu.option)
                 menu.setOnMenuItemClickListener { item ->
                     when (item!!.itemId) {
                         R.id.ocultar_historico -> {
                             binding.recyclerHistory.visibility = View.GONE
                             binding.textTranslateHere.visibility = View.GONE
+                            securityPreferences.removeEnable()
+                            securityPreferences.putStoreString("value", "disable")
                             valueView = 1
                         }
                         R.id.excluir_tudo -> {
@@ -193,6 +211,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                                 binding.textTranslateHere.visibility = View.VISIBLE
                             }
                             binding.recyclerHistory.visibility = View.VISIBLE
+                            securityPreferences.removeDisable()
+                            securityPreferences.putStoreString("value", "enable")
                             valueView = 0
                         }
                         R.id.excluir_tudo -> {
@@ -278,7 +298,12 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 size = it.size
             }
             else {
-                binding.textTranslateHere.visibility = View.VISIBLE
+                if (getValue == "disable"){
+                    binding.textTranslateHere.visibility = View.GONE
+                }
+                else{
+                    binding.textTranslateHere.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -388,7 +413,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             binding.textTranslateHere.visibility = View.GONE
         }
         else {
-            if (valueView != 0){
+            getValue = securityPreferences.getStoredString("value").toString()
+            if (getValue == "disable"){
                 binding.textTranslateHere.visibility = View.GONE
             }
             else {
@@ -399,6 +425,13 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private fun toast(message: String){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun firstApp(){
+        if (getValue == ""){
+            binding.textFrom.text = "Seja bem vindo!"
+            binding.textTo.text = "Be welcome!"
+        }
     }
 
 }

@@ -1,7 +1,9 @@
 package com.example.tradutorlinguas.activity
 
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.databinding.ActivityHistoryBinding
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
@@ -16,6 +18,7 @@ class HistoryActivity : AppCompatActivity() {
     private val viewModelApi: ViewModelApi by viewModel()
     private val playVoice: PlayVoice by inject()
     private val capture: CaptureFlag by inject()
+    private var playOrStop = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +38,7 @@ class HistoryActivity : AppCompatActivity() {
                 imageCardFrom.setImageResource(capture.capture(item.from))
                 imageCardTo.setImageResource(capture.capture(item.to))
 
+                textToolbar.text = "Salvo dia ${item.date} às ${item.hour}"
                 tvLangFrom.text = item.from
                 tvTranslateFrom.text = item.textFrom
                 tvLangTo.text = item.to
@@ -44,14 +48,40 @@ class HistoryActivity : AppCompatActivity() {
                 val langTo = Translator.Language.valueOf(item.to)
 
                 imagePlayCardFrom.setOnClickListener {
-                    playVoice.init(application, item.textFrom, langFrom.str)
+                    playVoice.init(application, item.textFrom, langFrom.str, playOrStop)
+                    setValuePlayOrStop(binding.imagePlayCardFrom)
                 }
                 imagePlayCardTo.setOnClickListener {
-                    playVoice.init(application, item.textTo, langTo.str)
+                    playVoice.init(application, item.textTo, langTo.str, playOrStop)
+                    setValuePlayOrStop(binding.imagePlayCardTo)
                 }
             }
         })
 
+        binding.closeActivity.setOnClickListener {
+            playVoice.stopVoice()
+            finish()
+        }
+    }
+
+    override fun onBackPressed() {
+        playVoice.stopVoice()
+        super.onBackPressed()
+    }
+
+    private fun setValuePlayOrStop(icPlay: ImageView) {
+        playOrStop = if (playOrStop == 0) {
+            modifyIconPlayStop(icPlay)
+            1
+        } else {
+            modifyIconPlayStop(icPlay)
+            0
+        }
+    }
+
+    private fun modifyIconPlayStop(icon: ImageView){
+        if (playOrStop == 0) { icon.setImageResource(R.drawable.ic_stop_write) }
+        else { icon.setImageResource(R.drawable.ic_sound_gray) }
     }
 
 }

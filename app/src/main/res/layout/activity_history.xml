@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="15dp"
-    android:paddingEnd="15dp"
+    android:background="@color/purple_500"
     android:id="@+id/box_employee">
 
     <androidx.appcompat.widget.Toolbar
@@ -18,9 +17,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_close"
+            android:id="@+id/close_activity"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_back"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -29,6 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
             android:textSize="18sp"
+            android:textColor="@color/white"
             android:text="Exemplo"/>
 
     </androidx.appcompat.widget.Toolbar>
@@ -36,7 +38,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar3">
@@ -47,22 +50,22 @@
 
             <ImageView
                 android:id="@+id/image_play_card_from"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_marginTop="10dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/ic_sound"
+                android:src="@drawable/ic_sound_gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="ContentDescription,MissingConstraints" />
 
             <ImageView
                 android:id="@+id/image_play_card_to"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_marginTop="10dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="12dp"
-                android:src="@drawable/ic_sound"
+                android:src="@drawable/ic_sound_gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toolbar2"
                 tools:ignore="ContentDescription" />
@@ -71,8 +74,10 @@
                 android:id="@+id/toolbar2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="12dp"
-                android:background="@color/purple_500"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:background="@color/purple_200"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_translate_from" />
@@ -93,7 +98,7 @@
                 android:id="@+id/image_card_to"
                 android:layout_width="38dp"
                 android:layout_height="38dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:foregroundGravity="center"
                 android:src="@drawable/ic_close"
                 app:layout_constraintCircleRadius="50dp"
@@ -105,9 +110,10 @@
                 android:id="@+id/tv_lang_from"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:text="Português"
                 android:textSize="16sp"
+                android:textColor="@color/purple_200"
                 app:layout_constraintBottom_toBottomOf="@+id/image_card_from"
                 app:layout_constraintStart_toEndOf="@+id/image_card_from"
                 app:layout_constraintTop_toTopOf="@+id/image_card_from" />
@@ -117,10 +123,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:text="Exemplo de texto"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_card_from" />
 
@@ -128,9 +135,10 @@
                 android:id="@+id/tv_lang_to"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:text="Inglês"
                 android:textSize="16sp"
+                android:textColor="@color/purple_200"
                 app:layout_constraintBottom_toBottomOf="@+id/image_card_to"
                 app:layout_constraintStart_toEndOf="@+id/image_card_to"
                 app:layout_constraintTop_toTopOf="@+id/image_card_to" />
@@ -140,11 +148,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="6dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="12dp"
                 android:text="Exemplo de texto"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:textColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_card_to" />

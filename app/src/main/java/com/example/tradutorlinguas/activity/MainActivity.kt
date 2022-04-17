@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -32,7 +33,6 @@ import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
-import java.lang.Exception
 import java.util.*
 
 class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private var size = 0
     private var valueView = 0
     private var getValue = ""
+    private var playOrStop = 0
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -119,17 +120,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             }
         }
 
-        binding.icPlayTo.setOnClickListener {
-            val text = binding.textTo.text.toString()
-            val to = Translator.Language.valueOf(binding.tilTo.text)
-            if (text.isEmpty() || text.isBlank() || text == "Tradução"){
-                toast("Não há palavra para traduzir")
-            }
-            else{
-                playVoice.init(this, text, to.str)
-            }
-        }
-
         binding.icPlayFrom.setOnClickListener {
             val text = binding.textFrom.text
             val from = Translator.Language.valueOf(binding.tilFrom.text)
@@ -137,7 +127,20 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 toast("Digite ou fale uma palavra")
             }
             else{
-                playVoice.init(this, text, from.str)
+                playVoice.init(this, text, from.str, playOrStop)
+                setValuePlayOrStop(binding.icPlayFrom)
+            }
+        }
+
+        binding.icPlayTo.setOnClickListener {
+            val text = binding.textTo.text.toString()
+            val to = Translator.Language.valueOf(binding.tilTo.text)
+            if (text.isEmpty() || text.isBlank() || text == "Tradução"){
+                toast("Não há palavra para traduzir")
+            }
+            else{
+                playVoice.init(this, text, to.str, playOrStop)
+                setValuePlayOrStop(binding.icPlayTo)
             }
         }
 
@@ -166,6 +169,21 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 toast("Erro na tradução, tente novamente!")
             }
         }
+    }
+
+    private fun setValuePlayOrStop(icPlay: ImageView) {
+        playOrStop = if (playOrStop == 0) {
+            modifyIconPlayStop(icPlay)
+            1
+        } else {
+            modifyIconPlayStop(icPlay)
+            0
+        }
+    }
+
+    private fun modifyIconPlayStop(icon: ImageView){
+        if (playOrStop == 0) { icon.setImageResource(R.drawable.ic_stop) }
+        else { icon.setImageResource(R.drawable.ic_sound) }
     }
 
     private fun showMenu(){

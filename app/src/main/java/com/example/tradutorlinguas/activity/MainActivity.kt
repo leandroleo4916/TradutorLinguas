@@ -24,7 +24,7 @@ import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
 import com.example.tradutorlinguas.remote.PlayVoice
-import com.example.tradutorlinguas.remote.Translator
+import com.example.tradutorlinguas.repository.Language
 import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.util.CaptureHourDate
 import com.example.tradutorlinguas.util.GetColor
@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private var valueView = 0
     private var getValue = ""
     private var playOrStop = 0
+    private val cont: ArrayList<String> = arrayListOf()
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -85,14 +86,14 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private fun listener(){
 
-        val list = Translator.Language.values()
+        val list = Language.values()
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, list)
 
         binding.run {
             textViewFrom.setAdapter(adapter)
             textViewTo.setAdapter(adapter)
-            textViewFrom.setText(Translator.Language.Português.name, false)
-            textViewTo.setText(Translator.Language.Inglês.name, false)
+            textViewFrom.setText(Language.Português.name, false)
+            textViewTo.setText(Language.Inglês.name, false)
 
             imgSwap.setOnClickListener {
                 val from = binding.tilFrom.text
@@ -113,8 +114,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 }
                 else{
                     val textTo = binding.textTo.text.toString()
-                    val from = Translator.Language.valueOf(binding.tilFrom.text)
-                    val to = Translator.Language.valueOf(binding.tilTo.text)
+                    val from = Language.valueOf(binding.tilFrom.text)
+                    val to = Language.valueOf(binding.tilTo.text)
                     saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo, hour, date))
                 }
             }
@@ -122,53 +123,59 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
         binding.icPlayFrom.setOnClickListener {
             val text = binding.textFrom.text
-            val from = Translator.Language.valueOf(binding.tilFrom.text)
+            val from = Language.valueOf(binding.tilFrom.text)
             if (text.isEmpty() || text.isBlank()){
                 toast("Digite ou fale uma palavra")
             }
             else{
                 playVoice.init(this, text, from.str, playOrStop)
                 setValuePlayOrStop(binding.icPlayFrom)
+                binding.icPlayTo.setImageResource(R.drawable.ic_sound)
             }
         }
 
         binding.icPlayTo.setOnClickListener {
             val text = binding.textTo.text.toString()
-            val to = Translator.Language.valueOf(binding.tilTo.text)
+            val to = Language.valueOf(binding.tilTo.text)
             if (text.isEmpty() || text.isBlank() || text == "Tradução"){
                 toast("Não há palavra para traduzir")
             }
             else{
                 playVoice.init(this, text, to.str, playOrStop)
                 setValuePlayOrStop(binding.icPlayTo)
+                binding.icPlayFrom.setImageResource(R.drawable.ic_sound)
             }
         }
 
         binding.textFrom.editText?.doAfterTextChanged {
+            if (it.toString().isNotBlank()) iconDark()
+            else iconGray()
+        }
 
+        binding.icSendFrom.setOnClickListener {
             try {
-                if (it.toString().isNotBlank()){
-
-                    val from = Translator.Language.valueOf(binding.tilFrom.text)
-                    val to = Translator.Language.valueOf(binding.tilTo.text)
+                if (binding.textFrom.text.isNotBlank()){
+                    binding.progress.visibility = View.VISIBLE
+                    binding.textTranslate.text = getString(R.string.traduzindo)
+                    val from = Language.valueOf(binding.tilFrom.text)
+                    val to = Language.valueOf(binding.tilTo.text)
                     val text = binding.textFrom.text
-
-                    if (validationInternet(this)){
-                        binding.progress.visibility = View.VISIBLE
-                        observer(LanguageData(0, from.str, to.str, text, "", "", ""))
-                    }
-                    else { binding.textTo.text = getString(R.string.verifique_internet) }
+                    translate(from.str, to.str, text)
                 }
-                else{
-                    binding.textTo.text = getString(R.string.traducao)
-                    binding.icSave.setImageResource(R.drawable.ic_save_gray)
-                    binding.icPlayFrom.setImageResource(R.drawable.ic_sound_gray)
-                    binding.icPlayTo.setImageResource(R.drawable.ic_sound_gray)
+                else {
+                    toast("Digite ou fale uma palavra")
                 }
             }catch (e: Exception){
                 toast("Erro na tradução, tente novamente!")
             }
         }
+    }
+
+    private fun translate(from: String, to: String, text: String) {
+        if (validationInternet(this)){
+            observer(LanguageData(0, from, to, text, "", "", ""))
+        }
+        else { binding.textTo.text = getString(R.string.verifique_internet) }
     }
 
     private fun setValuePlayOrStop(icPlay: ImageView) {
@@ -205,7 +212,9 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                         R.id.excluir_tudo -> {
                             removeAllHistory()
                         }
-                        R.id.sair -> { finish() }
+                        R.id.sair -> {
+                            finish()
+                        }
                     }
                     true
                 }
@@ -220,8 +229,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                             val size = viewModelApi.history.value?.size ?: 0
                             if (size != 0) {
                                 binding.textTranslateHere.visibility = View.GONE
-                            }
-                            else {
+                            } else {
                                 binding.textTranslateHere.visibility = View.VISIBLE
                             }
                             binding.recyclerHistory.visibility = View.VISIBLE
@@ -232,7 +240,9 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                         R.id.excluir_tudo -> {
                             removeAllHistory()
                         }
-                        R.id.sair -> { finish() }
+                        R.id.sair -> {
+                            finish()
+                        }
                     }
                     true
                 }
@@ -291,15 +301,54 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
         viewModelApi.translate(languageData)
         viewModelApi.translateValue.observe(this){
-            it?.let { string ->
-                binding.run {
-                    progress.visibility = View.INVISIBLE
-                    textTo.text = string
-                    icSave.setImageResource(R.drawable.ic_save)
-                    icPlayFrom.setImageResource(R.drawable.ic_sound)
-                    icPlayTo.setImageResource(R.drawable.ic_sound)
+
+            try {
+                it?.let { string ->
+                    val s = string.split(" ")
+                    var str = ""
+
+                    for (n in s.indices){
+                        str += if (s[n].contains("&#39;")){
+                            if (n == 0){
+                                s[n].replaceFirst("&#39;", "'")
+                            }
+                            else {
+                                " "+s[n].replaceFirst("&#39;", "'")
+                            }
+                        } else {
+                            if (n == 0){ s[n] }
+                            else " "+s[n]
+                        }
+                    }
+
+                    binding.progress.visibility = View.INVISIBLE
+                    binding.textTranslate.text = getString(R.string.traducao)
+                    binding.textTo.text = str
+                    iconDark()
                 }
-            }
+            }catch (e: Exception){}
+        }
+    }
+
+    private fun iconDark(){
+        binding.run {
+            icSave.setImageResource(R.drawable.ic_save)
+            icPlayFrom.setImageResource(R.drawable.ic_sound)
+            icPlayTo.setImageResource(R.drawable.ic_sound)
+            icCopyFrom.setImageResource(R.drawable.ic_copy)
+            icCopyTo.setImageResource(R.drawable.ic_copy)
+            icSendFrom.setImageResource(R.drawable.ic_send)
+        }
+    }
+
+    private fun iconGray(){
+        binding.run {
+            icSave.setImageResource(R.drawable.ic_save_gray)
+            icPlayFrom.setImageResource(R.drawable.ic_sound_gray)
+            icPlayTo.setImageResource(R.drawable.ic_sound_gray)
+            icCopyFrom.setImageResource(R.drawable.ic_copy_gray)
+            icCopyTo.setImageResource(R.drawable.ic_copy_gray)
+            icSendFrom.setImageResource(R.drawable.ic_send_gray)
         }
     }
 
@@ -363,7 +412,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         try {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                         RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             }
 
@@ -372,7 +421,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             }
             else { toast("Erro ao gravar") }
 
-        }catch(e: Exception) {}
+        }catch (e: Exception) {}
 
     }
 

@@ -115,7 +115,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:hint="De:"
                 app:layout_constraintEnd_toStartOf="@id/img_swap"
@@ -166,55 +166,75 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
                 android:layout_width="0dp"
-                android:layout_height="160dp"
-                android:layout_marginTop="25dp"
+                android:layout_height="182dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="@id/guide_end"
                 app:layout_constraintStart_toStartOf="@id/guide_start"
                 app:layout_constraintTop_toBottomOf="@+id/img_swap"
                 tools:ignore="MissingConstraints">
 
                 <ImageView
-                    android:id="@+id/ic_voz"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_voice"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:id="@+id/ic_send_from"
+                    android:layout_width="26dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_send_gray"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ic_voz"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/ic_voz"
                     tools:ignore="ContentDescription,MissingConstraints" />
 
                 <ImageView
                     android:id="@+id/ic_play_from"
                     android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="10.1dp"
+                    android:layout_height="0dp"
                     android:src="@drawable/ic_sound_gray"
-                    app:layout_constraintBottom_toTopOf="@+id/ic_save"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/ic_voz"
+                    app:layout_constraintStart_toEndOf="@+id/ic_send_from"
+                    app:layout_constraintTop_toTopOf="@+id/ic_voz"
+                    tools:ignore="ContentDescription,MissingConstraints" />
+
+                <ImageView
+                    android:id="@+id/ic_voz"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/ic_voice"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ic_voz"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_from"
                     tools:ignore="ContentDescription,MissingConstraints" />
 
                 <ImageView
                     android:id="@+id/ic_save"
                     android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_marginEnd="11.5dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_height="0dp"
                     android:src="@drawable/ic_save_gray"
-                    app:layout_constraintBottom_toBottomOf="@+id/text_from"
+                    app:layout_constraintBottom_toBottomOf="@+id/ic_voz"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ic_voz"
+                    app:layout_constraintTop_toTopOf="@+id/ic_voz"
+                    tools:ignore="ContentDescription,MissingConstraints" />
+
+                <ImageView
+                    android:id="@+id/ic_copy_from"
+                    android:layout_width="26dp"
+                    android:layout_height="0dp"
+                    android:src="@drawable/ic_copy_gray"
+                    app:layout_constraintBottom_toBottomOf="@+id/ic_voz"
+                    app:layout_constraintEnd_toStartOf="@+id/ic_save"
+                    app:layout_constraintStart_toEndOf="@+id/ic_voz"
+                    app:layout_constraintTop_toTopOf="@+id/ic_voz"
                     tools:ignore="ContentDescription,MissingConstraints" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/text_from"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
-                    android:layout_height="160dp"
-                    android:layout_marginEnd="50dp"
+                    android:layout_height="140dp"
                     android:hint="Digite ou Fale"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -229,52 +249,96 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.wang.avi.AVLoadingIndicatorView
-                android:id="@+id/progress"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="115dp"
-                android:layout_marginTop="4dp"
-                android:visibility="invisible"
-                app:indicatorColor="@color/purple_500"
-                app:indicatorName="BallPulseIndicator"
-                app:layout_constraintStart_toStartOf="@+id/guide_start"
-                app:layout_constraintTop_toTopOf="@+id/scrool" />
-
-            <ScrollView
-                android:id="@+id/scrool"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar_translate"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/back_fundo_black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guide_end"
                 app:layout_constraintStart_toStartOf="@+id/guide_start"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_translate"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="2dp"
+                android:background="@drawable/back_fundo_white"
+                app:layout_constraintBottom_toBottomOf="@+id/toolbar_translate"
+                app:layout_constraintEnd_toStartOf="@+id/guide_end"
+                app:layout_constraintStart_toStartOf="@+id/guide_start"
+                app:layout_constraintTop_toTopOf="@+id/toolbar_translate">
 
                 <TextView
-                    android:id="@+id/text_to"
-                    android:layout_width="match_parent"
+                    android:id="@+id/text_translate"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="10dp"
                     android:paddingTop="10dp"
-                    android:paddingEnd="50dp"
-                    android:text="Tradução"
+                    android:text="@string/traducao"
                     android:textColor="@color/purple_500"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="RtlSymmetry" />
 
-            </ScrollView>
+                <ScrollView
+                    android:id="@+id/scroll_translate"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_translate">
 
-            <ImageView
-                android:id="@+id/ic_play_to"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="12dp"
-                android:src="@drawable/ic_sound_gray"
-                app:layout_constraintEnd_toStartOf="@+id/guide_end"
-                app:layout_constraintTop_toTopOf="@+id/scrool"
-                tools:ignore="ContentDescription,MissingConstraints" />
+                    <TextView
+                        android:id="@+id/text_to"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:textColor="@color/purple_500"
+                        android:textSize="18sp" />
+
+                </ScrollView>
+
+                <ImageView
+                    android:id="@+id/ic_play_to"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginTop="8dp"
+                    android:src="@drawable/ic_sound_gray"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription,MissingConstraints" />
+
+                <ImageView
+                    android:id="@+id/ic_copy_to"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_copy_gray"
+                    app:layout_constraintBottom_toBottomOf="@+id/ic_play_to"
+                    app:layout_constraintEnd_toStartOf="@+id/ic_play_to"
+                    app:layout_constraintTop_toTopOf="@+id/ic_play_to"
+                    tools:ignore="ContentDescription,MissingConstraints" />
+
+                <com.wang.avi.AVLoadingIndicatorView
+                    android:id="@+id/progress"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="2dp"
+                    android:visibility="invisible"
+                    app:indicatorColor="@color/purple_500"
+                    app:indicatorName="BallPulseIndicator"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

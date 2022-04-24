@@ -1,6 +1,5 @@
 package com.example.tradutorlinguas.di
 
-import com.example.tradutorlinguas.activity.CreateDialog
 import com.example.tradutorlinguas.activity.CreateMenu
 import com.example.tradutorlinguas.dbhistory.DataBaseHistory
 import com.example.tradutorlinguas.remote.PlayVoice
@@ -38,9 +37,6 @@ val getColor = module {
 val getFlag = module {
     factory { CaptureFlag() }
 }
-val moduleCreateDialog = module {
-    factory { CreateDialog() }
-}
 val moduleCreateMenu = module {
     factory { CreateMenu() }
 }
@@ -48,5 +44,4 @@ val securityPreferences = module {
     factory { SecurityPreferences(get()) }
 }
 val appModules = listOf( repositoryModule, viewModelModule, playVoice, moduleCreateMenu,
-        dataBase, repositoryHistory, captureHourDate, getColor, getFlag, moduleCreateDialog,
-        securityPreferences)
+        dataBase, repositoryHistory, captureHourDate, getColor, getFlag, securityPreferences)

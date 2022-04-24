@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.databinding.ActivityHistoryBinding
 import com.example.tradutorlinguas.remote.PlayVoice
-import com.example.tradutorlinguas.remote.Translator
+import com.example.tradutorlinguas.repository.Language
 import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import org.koin.android.ext.android.inject
@@ -44,16 +44,18 @@ class HistoryActivity : AppCompatActivity() {
                 tvLangTo.text = item.to
                 tvTranslateTo.text = item.textTo
 
-                val langFrom = Translator.Language.valueOf(item.from)
-                val langTo = Translator.Language.valueOf(item.to)
+                val langFrom = Language.valueOf(item.from)
+                val langTo = Language.valueOf(item.to)
 
                 imagePlayCardFrom.setOnClickListener {
                     playVoice.init(application, item.textFrom, langFrom.str, playOrStop)
                     setValuePlayOrStop(binding.imagePlayCardFrom)
+                    imageCardTo.setImageResource(R.drawable.ic_sound_gray)
                 }
                 imagePlayCardTo.setOnClickListener {
                     playVoice.init(application, item.textTo, langTo.str, playOrStop)
                     setValuePlayOrStop(binding.imagePlayCardTo)
+                    imageCardFrom.setImageResource(R.drawable.ic_sound_gray)
                 }
             }
         })

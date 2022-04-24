@@ -10,7 +10,6 @@ import java.net.URLEncoder
 class Translator {
 
     fun translate(lang: LanguageData): String {
-
         return try {
             val urlStr =
                     "https://script.google.com/macros/s/AKfycbwEdjA_0xrRXhI-qyFwjCisfehoOgkCPAOR7Ovr5g/exec" +
@@ -32,11 +31,5 @@ class Translator {
         } catch (e: Exception) {
             "Erro na tradução, tente novamente!"
         }
-
-    }
-
-    enum class Language (val str: String) {
-        Inglês("en"), Português("pt"), Espanhol("es"), Françês("fr"),
-        Italiano("it")
     }
 }

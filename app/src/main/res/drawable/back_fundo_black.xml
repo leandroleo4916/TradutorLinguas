@@ -10,8 +10,8 @@
         android:height="90dp"
         />
     <gradient
-        android:endColor="#FFFFFF"
-        android:startColor="#FFFFFF"
+        android:endColor="@color/purple_500"
+        android:startColor="@color/purple_500"
         android:angle="90"
         />
 </shape>

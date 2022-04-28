@@ -2,6 +2,8 @@ package com.example.tradutorlinguas.activity
 
 import android.Manifest
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,7 +14,6 @@ import android.speech.RecognizerIntent
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -27,7 +28,6 @@ import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.repository.Language
 import com.example.tradutorlinguas.util.CaptureFlag
 import com.example.tradutorlinguas.util.CaptureHourDate
-import com.example.tradutorlinguas.util.GetColor
 import com.example.tradutorlinguas.util.SecurityPreferences
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
@@ -39,9 +39,11 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val playVoice: PlayVoice by inject()
+    private val animatorImage: AnimatorClickImage by inject()
+    private val modifyIcon: ModifyIcon by inject()
+    private val showToast: ShowToast by inject()
     private lateinit var adapterHistory: AdapterHistory
     private val captureHourDate: CaptureHourDate by inject()
-    private val color: GetColor by inject()
     private val securityPreferences: SecurityPreferences by inject()
     private val capture: CaptureFlag by inject()
     private val createViewMenu: CreateMenu by inject()
@@ -52,7 +54,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private var valueView = 0
     private var getValue = ""
     private var playOrStop = 0
-    private val cont: ArrayList<String> = arrayListOf()
 
     companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
@@ -77,7 +78,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     }
 
     private fun recyclerHistory() {
-        adapterHistory = AdapterHistory(color, this, this, capture)
+        adapterHistory = AdapterHistory(this, this, capture)
         val recycler = binding.recyclerHistory
         recycler.layoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -96,38 +97,39 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             textViewTo.setText(Language.Inglês.name, false)
 
             imgSwap.setOnClickListener {
+                animatorImage.animationImage(imgSwap)
                 val from = binding.tilFrom.text
                 binding.textViewFrom.setText(binding.tilTo.text, false)
                 binding.textViewTo.setText(from, false)
             }
 
-            icVoz.setOnClickListener { permissionVoice() }
+            icVoz.setOnClickListener {
+                animatorImage.animationImage(icVoz)
+                permissionVoice()
+            }
 
             icSave.setOnClickListener {
 
+                animatorImage.animationImage(icSave)
                 val textFrom = binding.textFrom.text
+                val textTo = binding.textTo.text
                 val hour = captureHourDate.captureHoraCurrent()
                 val date = captureHourDate.captureDateCurrent()
 
-                if (textFrom.isEmpty() || textFrom.isBlank()){
-                    toast("Não há palavra para salvar")
-                }
-                else{
-                    val textTo = binding.textTo.text.toString()
+                if (textFrom.isNotEmpty() && textTo != ""){
                     val from = Language.valueOf(binding.tilFrom.text)
                     val to = Language.valueOf(binding.tilTo.text)
-                    saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo, hour, date))
+                    saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo.toString(), hour, date))
                 }
             }
         }
 
         binding.icPlayFrom.setOnClickListener {
+            animatorImage.animationImage(binding.icPlayFrom)
             val text = binding.textFrom.text
             val from = Language.valueOf(binding.tilFrom.text)
-            if (text.isEmpty() || text.isBlank()){
-                toast("Digite ou fale uma palavra")
-            }
-            else{
+
+            if (text.isNotEmpty() || text.isNotBlank()){
                 playVoice.init(this, text, from.str, playOrStop)
                 setValuePlayOrStop(binding.icPlayFrom)
                 binding.icPlayTo.setImageResource(R.drawable.ic_sound)
@@ -135,12 +137,11 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         }
 
         binding.icPlayTo.setOnClickListener {
+            animatorImage.animationImage(binding.icPlayTo)
             val text = binding.textTo.text.toString()
             val to = Language.valueOf(binding.tilTo.text)
-            if (text.isEmpty() || text.isBlank() || text == "Tradução"){
-                toast("Não há palavra para traduzir")
-            }
-            else{
+
+            if (text.isNotEmpty() || text.isNotBlank()){
                 playVoice.init(this, text, to.str, playOrStop)
                 setValuePlayOrStop(binding.icPlayTo)
                 binding.icPlayFrom.setImageResource(R.drawable.ic_sound)
@@ -148,11 +149,15 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         }
 
         binding.textFrom.editText?.doAfterTextChanged {
-            if (it.toString().isNotBlank()) iconDark()
-            else iconGray()
+            if (it.toString().isNotBlank()) {
+                modifyIcon.iconsShow(binding)
+                binding.textTo.text = ""
+            }
+            else modifyIcon.iconsHide(binding)
         }
 
         binding.icSendFrom.setOnClickListener {
+            animatorImage.animationImage(binding.icSendFrom)
             try {
                 if (binding.textFrom.text.isNotBlank()){
                     binding.progress.visibility = View.VISIBLE
@@ -162,11 +167,22 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                     val text = binding.textFrom.text
                     translate(from.str, to.str, text)
                 }
-                else {
-                    toast("Digite ou fale uma palavra")
-                }
             }catch (e: Exception){
-                toast("Erro na tradução, tente novamente!")
+                showToast.toast("Erro na tradução, tente novamente!", this@MainActivity)
+            }
+        }
+
+        binding.icCopyFrom.setOnClickListener {
+            animatorImage.animationImage(binding.icCopyFrom)
+
+            val textFrom = binding.textFrom.text
+            val textTo = binding.textTo.text
+
+            if (textFrom.isNotEmpty() && textTo != ""){
+                val copy = ClipData.newPlainText("text", textFrom)
+                val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                clipboardManager.setPrimaryClip(copy)
+                showToast.toast("Copiado", this@MainActivity)
             }
         }
     }
@@ -226,7 +242,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 menu.setOnMenuItemClickListener { item ->
                     when (item!!.itemId) {
                         R.id.mostrar_historico -> {
-                            val size = viewModelApi.history.value?.size ?: 0
+                            val size = viewModelApi.consultSizeList()
                             if (size != 0) {
                                 binding.textTranslateHere.visibility = View.GONE
                             } else {
@@ -258,17 +274,19 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 viewModelApi.removeAll(listHistory)
                 adapterHistory.updateRemoveAll(listHistory)
             }
-            else{ toast("Não tem arquivos para excluir!") }
+            else {
+                showToast.toast("Não tem arquivos para excluir!", this@MainActivity)
+            }
         }
     }
 
     private fun saveTranslate(languageData: LanguageData) {
         val value = viewModelApi.saveHistory(languageData)
         if (value){
-            toast("Tradução Salva!")
+            showToast.toast("Tradução Salva!", this@MainActivity)
             viewModelApi.consultHistory()
         }
-        else { toast("Falha ao salvar!") }
+        else showToast.toast("Falha ao salvar!", this@MainActivity)
     }
 
     private fun validationInternet(context: Context): Boolean {
@@ -324,31 +342,9 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                     binding.progress.visibility = View.INVISIBLE
                     binding.textTranslate.text = getString(R.string.traducao)
                     binding.textTo.text = str
-                    iconDark()
+                    modifyIcon.iconSaveShow(binding)
                 }
             }catch (e: Exception){}
-        }
-    }
-
-    private fun iconDark(){
-        binding.run {
-            icSave.setImageResource(R.drawable.ic_save)
-            icPlayFrom.setImageResource(R.drawable.ic_sound)
-            icPlayTo.setImageResource(R.drawable.ic_sound)
-            icCopyFrom.setImageResource(R.drawable.ic_copy)
-            icCopyTo.setImageResource(R.drawable.ic_copy)
-            icSendFrom.setImageResource(R.drawable.ic_send)
-        }
-    }
-
-    private fun iconGray(){
-        binding.run {
-            icSave.setImageResource(R.drawable.ic_save_gray)
-            icPlayFrom.setImageResource(R.drawable.ic_sound_gray)
-            icPlayTo.setImageResource(R.drawable.ic_sound_gray)
-            icCopyFrom.setImageResource(R.drawable.ic_copy_gray)
-            icCopyTo.setImageResource(R.drawable.ic_copy_gray)
-            icSendFrom.setImageResource(R.drawable.ic_send_gray)
         }
     }
 
@@ -401,7 +397,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                         PackageManager.PERMISSION_GRANTED) {
                     openVoice()
                 } else {
-                    toast("Permissão negada")
+                    showToast.toast("Permissão negada", this@MainActivity)
                 }
             }
         }
@@ -419,7 +415,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             if (intent.resolveActivity(packageManager) == null) {
                 startActivityForResult(intent, SPEECH_REQUEST_CODE)
             }
-            else { toast("Erro ao gravar") }
+            else showToast.toast("Erro ao gravar", this@MainActivity)
 
         }catch (e: Exception) {}
 
@@ -452,10 +448,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 binding.textTranslateHere.visibility = View.VISIBLE
             }
         }
-    }
-
-    private fun toast(message: String){
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
 }

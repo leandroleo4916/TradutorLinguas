@@ -22,8 +22,7 @@ class PlayVoice {
     private fun onInitListener(str: String, lang: String) = TextToSpeech.OnInitListener {
 
         if (it == TextToSpeech.SUCCESS) {
-            val locale = Locale(lang)
-            val result = textToSpeech?.setLanguage(locale)
+            val result = textToSpeech?.setLanguage(Locale(lang))
 
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("erro", "Linguagem não suportada")

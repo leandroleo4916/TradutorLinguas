@@ -315,17 +315,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="ContentDescription,MissingConstraints" />
 
-                <ImageView
-                    android:id="@+id/ic_copy_to"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/ic_copy_gray"
-                    app:layout_constraintBottom_toBottomOf="@+id/ic_play_to"
-                    app:layout_constraintEnd_toStartOf="@+id/ic_play_to"
-                    app:layout_constraintTop_toTopOf="@+id/ic_play_to"
-                    tools:ignore="ContentDescription,MissingConstraints" />
-
                 <com.wang.avi.AVLoadingIndicatorView
                     android:id="@+id/progress"
                     android:layout_width="40dp"

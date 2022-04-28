@@ -41,5 +41,8 @@ class ViewModelApi(private val translate: Translator,
     fun removeAll(item: ArrayList<LanguageData>){
         for (i in item){ repositoryHistory.removeAll(i.id) }
     }
+    fun consultSizeList(): Int{
+        return repositoryHistory.consultSizeList()
+    }
 
 }

@@ -12,6 +12,7 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
     private val dbWrite = dataBaseHistory.writableDatabase
     private val dbRead = dataBaseHistory.readableDatabase
     private val tableName = ConstantsHistory.HISTORY.TABLE_NAME
+    private lateinit var cursor: Cursor
 
     fun saveEmployee(history: LanguageData): Boolean {
 
@@ -39,7 +40,6 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
 
         val list: ArrayList<LanguageData> = ArrayList()
         try {
-            val cursor: Cursor
             val projection = arrayOf(
                     ConstantsHistory.HISTORY.COLUMNS.ID,
                     ConstantsHistory.HISTORY.COLUMNS.LANGFROM,
@@ -51,9 +51,10 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
 
             val orderBy = ConstantsHistory.HISTORY.COLUMNS.ID
 
-            cursor = dbRead.query (tableName, projection, null, null, null, null, orderBy)
+            cursor = dbRead.query (tableName, projection, null, null,
+                    null, null, orderBy)
 
-            if (cursor != null && cursor.count > 0) {
+            if (cursor.count > 0) {
                 while (cursor.moveToNext()) {
 
                     val id = cursor.getInt(
@@ -74,7 +75,7 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
                     list.add(LanguageData(id, langFrom, langTo, textFrom, textTo, hour, date))
                 }
             }
-            cursor?.close()
+            cursor.close()
             return list
 
         } catch (e: Exception) {
@@ -87,7 +88,6 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
 
         var list: LanguageData? = null
         try {
-            val cursor: Cursor
             val projection = arrayOf(
                     ConstantsHistory.HISTORY.COLUMNS.ID,
                     ConstantsHistory.HISTORY.COLUMNS.LANGFROM,
@@ -103,7 +103,7 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
             cursor = dbRead.query (tableName, projection, selection, args,
                     null, null, null)
 
-            if (cursor != null && cursor.count > 0) {
+            if (cursor.count > 0) {
                 while (cursor.moveToNext()) {
 
                     val idInt = cursor.getInt(
@@ -124,7 +124,7 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
                     list = LanguageData(idInt, langFrom, langTo, textFrom, textTo, hour, date)
                 }
             }
-            cursor?.close()
+            cursor.close()
             return list
 
         } catch (e: Exception) {
@@ -152,6 +152,13 @@ class RepositoryHistory(dataBaseHistory: DataBaseHistory) {
             dbWrite.delete(tableName, selection, args)
 
         } catch (e: Exception) {  }
+    }
+
+    fun consultSizeList(): Int {
+        cursor = dbRead.query (tableName, null, null, null,
+                null, null, null)
+
+        return cursor.count
     }
 }
 

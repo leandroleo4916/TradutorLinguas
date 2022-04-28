@@ -12,10 +12,8 @@ import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
 import com.example.tradutorlinguas.util.CaptureFlag
-import com.example.tradutorlinguas.util.GetColor
 
-class AdapterHistory (private val color: GetColor,
-                      private val clickItem: IClickItemRecycler,
+class AdapterHistory (private val clickItem: IClickItemRecycler,
                       private val notification: INotification,
                       private val capture: CaptureFlag):
     RecyclerView.Adapter<AdapterHistory.ViewHolderHistory>() {
@@ -58,7 +56,6 @@ class AdapterHistory (private val color: GetColor,
             itemTextLangTo.text = history.to
             itemTextFrom.text = history.textFrom
             itemTextTo.text = history.textTo
-            //itemBox.setBackgroundResource(color.getColor(position))
 
             val imageF = capture.capture(history.from)
             imageFrom.setImageResource(imageF)

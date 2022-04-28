@@ -151,9 +151,11 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         binding.textFrom.editText?.doAfterTextChanged {
             if (it.toString().isNotBlank()) {
                 modifyIcon.iconsShow(binding)
+            }
+            else {
+                modifyIcon.iconsHide(binding)
                 binding.textTo.text = ""
             }
-            else modifyIcon.iconsHide(binding)
         }
 
         binding.icSendFrom.setOnClickListener {
@@ -175,11 +177,14 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         binding.icCopyFrom.setOnClickListener {
             animatorImage.animationImage(binding.icCopyFrom)
 
+            val from = Language.valueOf(binding.tilFrom.text)
+            val to = Language.valueOf(binding.tilTo.text)
             val textFrom = binding.textFrom.text
             val textTo = binding.textTo.text
+            val textComplete = "$from\n$textFrom\n\n$to\n$textTo"
 
             if (textFrom.isNotEmpty() && textTo != ""){
-                val copy = ClipData.newPlainText("text", textFrom)
+                val copy = ClipData.newPlainText("text", textComplete)
                 val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                 clipboardManager.setPrimaryClip(copy)
                 showToast.toast("Copiado", this@MainActivity)

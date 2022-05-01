@@ -1,15 +1,16 @@
 package com.example.tradutorlinguas.remote
 
-import android.content.Context
+import android.app.Application
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import com.example.tradutorlinguas.activity.MainActivity
 import java.util.*
 
 class PlayVoice {
 
     private var textToSpeech: TextToSpeech? = null
 
-    fun init(context: Context, text: String, lang: String, playOrStop: Int){
+    fun init(context: Application, text: String, lang: String, playOrStop: Int){
         try {
             if (playOrStop == 0) {
                 textToSpeech = TextToSpeech(context, onInitListener(text, lang))

@@ -4,7 +4,7 @@ package com.example.tradutorlinguas.activity
 import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
 
-class ModifyIcon {
+class ModifyIcon (private val animation: AnimatorView) {
 
     fun iconsShow(root: ActivityMainBinding) {
         root.run {
@@ -20,6 +20,8 @@ class ModifyIcon {
             icPlayTo.setImageResource(R.drawable.ic_sound_gray)
             icCopyFrom.setImageResource(R.drawable.ic_copy_gray)
             icSendFrom.setImageResource(R.drawable.ic_send_gray)
+            icSwapUp.setImageResource(R.drawable.ic_swap_up_gray)
+            icShare.setImageResource(R.drawable.ic_share_gray)
         }
     }
 
@@ -28,6 +30,8 @@ class ModifyIcon {
             icSave.setImageResource(R.drawable.ic_save)
             icPlayTo.setImageResource(R.drawable.ic_sound)
             icCopyFrom.setImageResource(R.drawable.ic_copy)
+            icSwapUp.setImageResource(R.drawable.ic_swap_up)
+            icShare.setImageResource(R.drawable.ic_share)
         }
     }
 }

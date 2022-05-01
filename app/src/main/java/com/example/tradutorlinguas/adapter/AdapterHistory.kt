@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tradutorlinguas.R
+import com.example.tradutorlinguas.activity.AnimatorView
 import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.interfaces.IClickItemRecycler
 import com.example.tradutorlinguas.interfaces.INotification
@@ -15,7 +16,8 @@ import com.example.tradutorlinguas.util.CaptureFlag
 
 class AdapterHistory (private val clickItem: IClickItemRecycler,
                       private val notification: INotification,
-                      private val capture: CaptureFlag):
+                      private val capture: CaptureFlag,
+                      private val animation: AnimatorView):
     RecyclerView.Adapter<AdapterHistory.ViewHolderHistory>() {
 
     private var listHistory: ArrayList<LanguageData> = arrayListOf()
@@ -30,7 +32,7 @@ class AdapterHistory (private val clickItem: IClickItemRecycler,
     override fun onBindViewHolder(holder: ViewHolderHistory, position: Int) {
 
         val fullHistory = listHistory[position]
-        holder.bindHistory(fullHistory, position)
+        holder.bindHistory(fullHistory)
     }
 
     inner class ViewHolderHistory(itemView: View) : RecyclerView.ViewHolder(itemView),
@@ -50,7 +52,7 @@ class AdapterHistory (private val clickItem: IClickItemRecycler,
             imageClose.setOnClickListener(this)
         }
 
-        fun bindHistory(history: LanguageData, position: Int){
+        fun bindHistory(history: LanguageData){
 
             itemTextLangFrom.text = history.from
             itemTextLangTo.text = history.to

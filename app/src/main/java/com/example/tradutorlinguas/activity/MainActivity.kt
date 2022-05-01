@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val playVoice: PlayVoice by inject()
-    private val animatorImage: AnimatorClickImage by inject()
+    private val animatorImage: AnimatorView by inject()
     private val modifyIcon: ModifyIcon by inject()
     private val showToast: ShowToast by inject()
     private lateinit var adapterHistory: AdapterHistory
@@ -55,7 +55,9 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private var getValue = ""
     private var playOrStop = 0
 
-    companion object { private const val SPEECH_REQUEST_CODE = 0 }
+    companion object {
+        private const val SPEECH_REQUEST_CODE = 0
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,21 +73,21 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     }
 
     private fun hideRecycler() {
-        if (getValue == "disable"){
+        if (getValue == "disable") {
             binding.textTranslateHere.visibility = View.GONE
             binding.recyclerHistory.visibility = View.GONE
         }
     }
 
     private fun recyclerHistory() {
-        adapterHistory = AdapterHistory(this, this, capture)
+        adapterHistory = AdapterHistory(this, this, capture, animatorImage)
         val recycler = binding.recyclerHistory
         recycler.layoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recycler.adapter = adapterHistory
     }
 
-    private fun listener(){
+    private fun listener() {
 
         val list = Language.values()
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, list)
@@ -97,106 +99,115 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
             textViewTo.setText(Language.Inglês.name, false)
 
             imgSwap.setOnClickListener {
-                animatorImage.animationImage(imgSwap)
-                val from = binding.tilFrom.text
-                binding.textViewFrom.setText(binding.tilTo.text, false)
-                binding.textViewTo.setText(from, false)
+                animatorImage.animationView(imgSwap)
+                val from = tilFrom.text
+                textViewFrom.setText(tilTo.text, false)
+                textViewTo.setText(from, false)
             }
 
             icVoz.setOnClickListener {
-                animatorImage.animationImage(icVoz)
+                animatorImage.animationView(icVoz)
                 permissionVoice()
             }
 
             icSave.setOnClickListener {
 
-                animatorImage.animationImage(icSave)
-                val textFrom = binding.textFrom.text
-                val textTo = binding.textTo.text
+                animatorImage.animationView(icSave)
+                val textFrom = textFrom.text
+                val textTo = textTo.text
                 val hour = captureHourDate.captureHoraCurrent()
                 val date = captureHourDate.captureDateCurrent()
 
-                if (textFrom.isNotEmpty() && textTo != ""){
-                    val from = Language.valueOf(binding.tilFrom.text)
-                    val to = Language.valueOf(binding.tilTo.text)
+                if (textFrom.isNotEmpty() && textTo != "") {
+                    val from = Language.valueOf(tilFrom.text)
+                    val to = Language.valueOf(tilTo.text)
                     saveTranslate(LanguageData(0, from.name, to.name, textFrom, textTo.toString(), hour, date))
                 }
             }
-        }
 
-        binding.icPlayFrom.setOnClickListener {
-            animatorImage.animationImage(binding.icPlayFrom)
-            val text = binding.textFrom.text
-            val from = Language.valueOf(binding.tilFrom.text)
-
-            if (text.isNotEmpty() || text.isNotBlank()){
-                playVoice.init(this, text, from.str, playOrStop)
-                setValuePlayOrStop(binding.icPlayFrom)
-                binding.icPlayTo.setImageResource(R.drawable.ic_sound)
-            }
-        }
-
-        binding.icPlayTo.setOnClickListener {
-            animatorImage.animationImage(binding.icPlayTo)
-            val text = binding.textTo.text.toString()
-            val to = Language.valueOf(binding.tilTo.text)
-
-            if (text.isNotEmpty() || text.isNotBlank()){
-                playVoice.init(this, text, to.str, playOrStop)
-                setValuePlayOrStop(binding.icPlayTo)
-                binding.icPlayFrom.setImageResource(R.drawable.ic_sound)
-            }
-        }
-
-        binding.textFrom.editText?.doAfterTextChanged {
-            if (it.toString().isNotBlank()) {
-                modifyIcon.iconsShow(binding)
-            }
-            else {
-                modifyIcon.iconsHide(binding)
-                binding.textTo.text = ""
-            }
-        }
-
-        binding.icSendFrom.setOnClickListener {
-            animatorImage.animationImage(binding.icSendFrom)
-            try {
-                if (binding.textFrom.text.isNotBlank()){
-                    binding.progress.visibility = View.VISIBLE
-                    binding.textTranslate.text = getString(R.string.traduzindo)
-                    val from = Language.valueOf(binding.tilFrom.text)
-                    val to = Language.valueOf(binding.tilTo.text)
-                    val text = binding.textFrom.text
-                    translate(from.str, to.str, text)
+            textFrom.editText?.doAfterTextChanged {
+                if (it.toString().isNotBlank()) {
+                    if (it.toString().length == 1) {
+                        modifyIcon.iconsShow(binding)
+                    }
+                } else {
+                    modifyIcon.iconsHide(binding)
+                    textTo.text = ""
                 }
-            }catch (e: Exception){
-                showToast.toast("Erro na tradução, tente novamente!", this@MainActivity)
             }
-        }
 
-        binding.icCopyFrom.setOnClickListener {
-            animatorImage.animationImage(binding.icCopyFrom)
+            icSendFrom.setOnClickListener {
+                animatorImage.animationView(icSendFrom)
+                try {
+                    if (textFrom.text.isNotBlank()) {
+                        progress.visibility = View.VISIBLE
+                        textTranslate.text = getString(R.string.traduzindo)
+                        val from = Language.valueOf(tilFrom.text)
+                        val to = Language.valueOf(tilTo.text)
+                        val text = textFrom.text
+                        translate(from.str, to.str, text)
+                    }
+                } catch (e: Exception) {
+                    showToast.toast("Erro na tradução, tente novamente!", this@MainActivity)
+                }
+            }
 
-            val from = Language.valueOf(binding.tilFrom.text)
-            val to = Language.valueOf(binding.tilTo.text)
-            val textFrom = binding.textFrom.text
-            val textTo = binding.textTo.text
-            val textComplete = "$from\n$textFrom\n\n$to\n$textTo"
+            icCopyFrom.setOnClickListener {
+                animatorImage.animationView(icCopyFrom)
 
-            if (textFrom.isNotEmpty() && textTo != ""){
-                val copy = ClipData.newPlainText("text", textComplete)
-                val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                clipboardManager.setPrimaryClip(copy)
-                showToast.toast("Copiado", this@MainActivity)
+                val from = Language.valueOf(tilFrom.text)
+                val to = Language.valueOf(tilTo.text)
+                val textFrom = textFrom.text
+                val textTo = textTo.text
+                val textComplete = "$from\n$textFrom\n\n$to\n$textTo"
+
+                if (textFrom.isNotEmpty() && textTo != "") {
+                    val copy = ClipData.newPlainText("text", textComplete)
+                    val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboardManager.setPrimaryClip(copy)
+                    showToast.toast("Copiado", this@MainActivity)
+                }
+            }
+
+            icPlayTo.setOnClickListener {
+                animatorImage.animationView(icPlayTo)
+                val text = textTo.text.toString()
+                val to = Language.valueOf(tilTo.text)
+
+                if (text.isNotEmpty() || text.isNotBlank()) {
+                    playVoice.init(application, text, to.str, playOrStop)
+                    setValuePlayOrStop(icPlayTo)
+                    icPlayFrom.setImageResource(R.drawable.ic_sound)
+                }
+            }
+
+            icPlayFrom.setOnClickListener {
+                animatorImage.animationView(icPlayFrom)
+                val text = textFrom.text
+                val from = Language.valueOf(tilFrom.text)
+
+                if (text.isNotEmpty() || text.isNotBlank()) {
+                    playVoice.init(application, text, from.str, playOrStop)
+                    setValuePlayOrStop(icPlayFrom)
+                    icPlayTo.setImageResource(R.drawable.ic_sound)
+                }
+            }
+
+            icShare.setOnClickListener {
+                animatorImage.animationView(icShare)
+            }
+            icSwapUp.setOnClickListener {
+                animatorImage.animationView(icSwapUp)
             }
         }
     }
 
     private fun translate(from: String, to: String, text: String) {
-        if (validationInternet(this)){
+        if (validationInternet(this)) {
             observer(LanguageData(0, from, to, text, "", "", ""))
+        } else {
+            binding.textTo.text = getString(R.string.verifique_internet)
         }
-        else { binding.textTo.text = getString(R.string.verifique_internet) }
     }
 
     private fun setValuePlayOrStop(icPlay: ImageView) {
@@ -209,17 +220,20 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         }
     }
 
-    private fun modifyIconPlayStop(icon: ImageView){
-        if (playOrStop == 0) { icon.setImageResource(R.drawable.ic_stop) }
-        else { icon.setImageResource(R.drawable.ic_sound) }
+    private fun modifyIconPlayStop(icon: ImageView) {
+        if (playOrStop == 0) {
+            icon.setImageResource(R.drawable.ic_stop)
+        } else {
+            icon.setImageResource(R.drawable.ic_sound)
+        }
     }
 
-    private fun showMenu(){
+    private fun showMenu() {
 
         binding.imageViewOption.setOnClickListener {
 
             getValue = securityPreferences.getStoredString("value").toString()
-            if (getValue == "enable" || getValue == ""){
+            if (getValue == "enable" || getValue == "") {
                 val menu = createViewMenu.createMenu(this, binding.imageViewOption, R.menu.option)
                 menu.setOnMenuItemClickListener { item ->
                     when (item!!.itemId) {
@@ -240,9 +254,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                     true
                 }
                 menu.show()
-            }
-
-            else {
+            } else {
                 val menu = createViewMenu.createMenu(this, binding.imageViewOption, R.menu.option_v2)
                 menu.setOnMenuItemClickListener { item ->
                     when (item!!.itemId) {
@@ -272,14 +284,13 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         }
     }
 
-    private fun removeAllHistory(){
+    private fun removeAllHistory() {
         val listHistory = viewModelApi.history.value
         if (listHistory != null) {
             if (listHistory.size != 0) {
                 viewModelApi.removeAll(listHistory)
                 adapterHistory.updateRemoveAll(listHistory)
-            }
-            else {
+            } else {
                 showToast.toast("Não tem arquivos para excluir!", this@MainActivity)
             }
         }
@@ -287,11 +298,10 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private fun saveTranslate(languageData: LanguageData) {
         val value = viewModelApi.saveHistory(languageData)
-        if (value){
+        if (value) {
             showToast.toast("Tradução Salva!", this@MainActivity)
             viewModelApi.consultHistory()
-        }
-        else showToast.toast("Falha ao salvar!", this@MainActivity)
+        } else showToast.toast("Falha ao salvar!", this@MainActivity)
     }
 
     private fun validationInternet(context: Context): Boolean {
@@ -323,24 +333,24 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     private fun observer(languageData: LanguageData) {
 
         viewModelApi.translate(languageData)
-        viewModelApi.translateValue.observe(this){
+        viewModelApi.translateValue.observe(this) {
 
             try {
                 it?.let { string ->
                     val s = string.split(" ")
                     var str = ""
 
-                    for (n in s.indices){
-                        str += if (s[n].contains("&#39;")){
-                            if (n == 0){
+                    for (n in s.indices) {
+                        str += if (s[n].contains("&#39;")) {
+                            if (n == 0) {
                                 s[n].replaceFirst("&#39;", "'")
-                            }
-                            else {
-                                " "+s[n].replaceFirst("&#39;", "'")
+                            } else {
+                                " " + s[n].replaceFirst("&#39;", "'")
                             }
                         } else {
-                            if (n == 0){ s[n] }
-                            else " "+s[n]
+                            if (n == 0) {
+                                s[n]
+                            } else " " + s[n]
                         }
                     }
 
@@ -349,23 +359,21 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                     binding.textTo.text = str
                     modifyIcon.iconSaveShow(binding)
                 }
-            }catch (e: Exception){}
+            } catch (e: Exception) { }
         }
     }
 
-    private fun observeHistory(){
+    private fun observeHistory() {
         viewModelApi.consultHistory()
-        viewModelApi.history.observe(this){
+        viewModelApi.history.observe(this) {
             if (it.size != 0) {
                 binding.textTranslateHere.visibility = View.GONE
                 adapterHistory.updateHistory(it)
                 size = it.size
-            }
-            else {
-                if (getValue == "disable"){
+            } else {
+                if (getValue == "disable") {
                     binding.textTranslateHere.visibility = View.GONE
-                }
-                else{
+                } else {
                     binding.textTranslateHere.visibility = View.VISIBLE
                 }
             }
@@ -374,22 +382,28 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
     private var TextInputLayout.text: String
         get() = editText?.text?.toString() ?: ""
-        set(value) { editText?.setText(value) }
+        set(value) {
+            editText?.setText(value)
+        }
 
     private fun permissionVoice() {
 
         if (this.let {
-                ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) }
+                    ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO)
+                }
                 == PackageManager.PERMISSION_DENIED ||
 
                 this.let {
-                ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) }
+                    ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO)
+                }
                 == PackageManager.GET_PERMISSIONS) {
 
             val permission = arrayOf(Manifest.permission.RECORD_AUDIO)
             requestPermissions(permission, permissionCode)
 
-        } else { openVoice() }
+        } else {
+            openVoice()
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
@@ -408,7 +422,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         }
     }
 
-    private fun openVoice(){
+    private fun openVoice() {
 
         try {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -419,10 +433,10 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
             if (intent.resolveActivity(packageManager) == null) {
                 startActivityForResult(intent, SPEECH_REQUEST_CODE)
-            }
-            else showToast.toast("Erro ao gravar", this@MainActivity)
+            } else showToast.toast("Erro ao gravar", this@MainActivity)
 
-        }catch (e: Exception) {}
+        } catch (e: Exception) {
+        }
 
     }
 
@@ -443,13 +457,11 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
     override fun notification(value: Int) {
         if (value != 0) {
             binding.textTranslateHere.visibility = View.GONE
-        }
-        else {
+        } else {
             getValue = securityPreferences.getStoredString("value").toString()
-            if (getValue == "disable"){
+            if (getValue == "disable") {
                 binding.textTranslateHere.visibility = View.GONE
-            }
-            else {
+            } else {
                 binding.textTranslateHere.visibility = View.VISIBLE
             }
         }

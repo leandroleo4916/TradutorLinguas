@@ -16,7 +16,7 @@ class HistoryActivity : AppCompatActivity() {
 
     private val binding by lazy { ActivityHistoryBinding.inflate(layoutInflater) }
     private val viewModelApi: ViewModelApi by viewModel()
-    private val animatorImage: AnimatorClickImage by inject()
+    private val animatorImage: AnimatorView by inject()
     private val playVoice: PlayVoice by inject()
     private val capture: CaptureFlag by inject()
     private var playOrStop = 0
@@ -49,24 +49,23 @@ class HistoryActivity : AppCompatActivity() {
                 val langTo = Language.valueOf(item.to)
 
                 imagePlayCardFrom.setOnClickListener {
-                    animatorImage.animationImage(imagePlayCardFrom)
+                    animatorImage.animationView(imagePlayCardFrom)
                     playVoice.init(application, item.textFrom, langFrom.str, playOrStop)
                     setValuePlayOrStop(binding.imagePlayCardFrom)
                     imageCardTo.setImageResource(R.drawable.ic_sound_gray)
                 }
                 imagePlayCardTo.setOnClickListener {
-                    animatorImage.animationImage(binding.imagePlayCardTo)
+                    animatorImage.animationView(binding.imagePlayCardTo)
                     playVoice.init(application, item.textTo, langTo.str, playOrStop)
                     setValuePlayOrStop(binding.imagePlayCardTo)
                     imageCardFrom.setImageResource(R.drawable.ic_sound_gray)
                 }
+                closeActivity.setOnClickListener {
+                    playVoice.stopVoice()
+                    finish()
+                }
             }
         })
-
-        binding.closeActivity.setOnClickListener {
-            playVoice.stopVoice()
-            finish()
-        }
     }
 
     override fun onBackPressed() {

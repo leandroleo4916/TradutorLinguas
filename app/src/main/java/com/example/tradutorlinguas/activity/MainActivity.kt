@@ -2,10 +2,7 @@ package com.example.tradutorlinguas.activity
 
 import android.Manifest
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -23,25 +20,25 @@ import com.example.tradutorlinguas.adapter.AdapterHistory
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
 import com.example.tradutorlinguas.dataclass.LanguageData
 import com.example.tradutorlinguas.interfaces.IClickItemRecycler
+import com.example.tradutorlinguas.interfaces.IModifyValue
 import com.example.tradutorlinguas.interfaces.INotification
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.repository.Language
-import com.example.tradutorlinguas.util.CaptureFlag
-import com.example.tradutorlinguas.util.CaptureHourDate
-import com.example.tradutorlinguas.util.SecurityPreferences
+import com.example.tradutorlinguas.util.*
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
 
-class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
+class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IModifyValue {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private val playVoice: PlayVoice by inject()
     private val animatorImage: AnimatorView by inject()
     private val modifyIcon: ModifyIcon by inject()
     private val showToast: ShowToast by inject()
+    private val formatText: FormatText by inject()
     private lateinit var adapterHistory: AdapterHistory
     private val captureHourDate: CaptureHourDate by inject()
     private val securityPreferences: SecurityPreferences by inject()
@@ -71,7 +68,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         recyclerHistory()
         observeHistory()
     }
-
+    
     private fun hideRecycler() {
         if (getValue == "disable") {
             binding.textTranslateHere.visibility = View.GONE
@@ -93,6 +90,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, list)
 
         binding.run {
+
             textViewFrom.setAdapter(adapter)
             textViewTo.setAdapter(adapter)
             textViewFrom.setText(Language.Português.name, false)
@@ -165,7 +163,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                     val copy = ClipData.newPlainText("text", textComplete)
                     val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                     clipboardManager.setPrimaryClip(copy)
-                    showToast.toast("Copiado", this@MainActivity)
+                    showToast.toast("Copiado!", this@MainActivity)
                 }
             }
 
@@ -175,9 +173,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 val to = Language.valueOf(tilTo.text)
 
                 if (text.isNotEmpty() || text.isNotBlank()) {
-                    playVoice.init(application, text, to.str, playOrStop)
-                    setValuePlayOrStop(icPlayTo)
-                    icPlayFrom.setImageResource(R.drawable.ic_sound)
+                    playAndModifyIconPlayStop(text.length.toLong(), icPlayTo, text, to.str)
                 }
             }
 
@@ -187,19 +183,35 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 val from = Language.valueOf(tilFrom.text)
 
                 if (text.isNotEmpty() || text.isNotBlank()) {
-                    playVoice.init(application, text, from.str, playOrStop)
-                    setValuePlayOrStop(icPlayFrom)
-                    icPlayTo.setImageResource(R.drawable.ic_sound)
+                    playAndModifyIconPlayStop(text.length.toLong(), icPlayFrom, text, from.str)
                 }
             }
 
             icShare.setOnClickListener {
                 animatorImage.animationView(icShare)
+
+                val from = Language.valueOf(tilFrom.text)
+                val to = Language.valueOf(tilTo.text)
+                val textFrom = textFrom.text
+                val textTo = textTo.text
+                val textComplete = "$from\n$textFrom\n\n$to\n$textTo"
+
+                if (textFrom.isNotEmpty() && textTo != "") {
+                    intentShare(textComplete)
+                }
             }
+
             icSwapUp.setOnClickListener {
                 animatorImage.animationView(icSwapUp)
             }
         }
+    }
+
+    private fun intentShare(text: String) {
+        val sharingIntent = Intent(Intent.ACTION_SEND)
+        sharingIntent.type = "text/translate"
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, text)
+        startActivity(Intent.createChooser(sharingIntent, "Tradução"))
     }
 
     private fun translate(from: String, to: String, text: String) {
@@ -210,21 +222,18 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
         }
     }
 
-    private fun setValuePlayOrStop(icPlay: ImageView) {
-        playOrStop = if (playOrStop == 0) {
-            modifyIconPlayStop(icPlay)
-            1
-        } else {
-            modifyIconPlayStop(icPlay)
-            0
-        }
-    }
-
-    private fun modifyIconPlayStop(icon: ImageView) {
+    private fun playAndModifyIconPlayStop(interval: Long, icon: ImageView, text: String, from: String) {
         if (playOrStop == 0) {
+            playOrStop = 1
             icon.setImageResource(R.drawable.ic_stop)
+            playVoice.init(application, text, from)
+            val returnState = ReturnStateIcon(this)
+            returnState.returnStateIcon(interval, icon)
+
         } else {
             icon.setImageResource(R.drawable.ic_sound)
+            playVoice.stopVoice()
+            playOrStop = 0
         }
     }
 
@@ -326,6 +335,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                         results?.get(0)
                     }
             binding.textFrom.text = spokenText.toString()
+            modifyIcon.iconsShow(binding)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -337,26 +347,11 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
             try {
                 it?.let { string ->
-                    val s = string.split(" ")
-                    var str = ""
-
-                    for (n in s.indices) {
-                        str += if (s[n].contains("&#39;")) {
-                            if (n == 0) {
-                                s[n].replaceFirst("&#39;", "'")
-                            } else {
-                                " " + s[n].replaceFirst("&#39;", "'")
-                            }
-                        } else {
-                            if (n == 0) {
-                                s[n]
-                            } else " " + s[n]
-                        }
-                    }
+                    val text = formatText.formatText(string)
 
                     binding.progress.visibility = View.INVISIBLE
                     binding.textTranslate.text = getString(R.string.traducao)
-                    binding.textTo.text = str
+                    binding.textTo.text = text
                     modifyIcon.iconSaveShow(binding)
                 }
             } catch (e: Exception) { }
@@ -433,10 +428,11 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
 
             if (intent.resolveActivity(packageManager) == null) {
                 startActivityForResult(intent, SPEECH_REQUEST_CODE)
-            } else showToast.toast("Erro ao gravar", this@MainActivity)
+            } else {
+                showToast.toast("Erro ao gravar", this@MainActivity)
+            }
 
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
 
     }
 
@@ -465,6 +461,10 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification {
                 binding.textTranslateHere.visibility = View.VISIBLE
             }
         }
+    }
+
+    override fun modifyValue(value: Int) {
+        playOrStop = 0
     }
 
 }

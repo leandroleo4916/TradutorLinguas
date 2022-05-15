@@ -212,7 +212,6 @@
                     android:layout_height="40dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_voice"
-
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -238,16 +237,6 @@
                     android:src="@drawable/ic_share_gray"
                     app:layout_constraintBottom_toBottomOf="@+id/ic_voz"
                     app:layout_constraintStart_toEndOf="@+id/ic_save"
-                    app:layout_constraintTop_toTopOf="@+id/ic_voz"
-                    tools:ignore="ContentDescription,MissingConstraints" />
-
-                <ImageView
-                    android:id="@+id/ic_move"
-                    android:layout_width="26dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/ic_move"
-                    app:layout_constraintBottom_toBottomOf="@+id/ic_voz"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/ic_voz"
                     tools:ignore="ContentDescription,MissingConstraints" />
 

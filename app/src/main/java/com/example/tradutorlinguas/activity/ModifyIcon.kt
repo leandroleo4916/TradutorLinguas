@@ -4,7 +4,7 @@ package com.example.tradutorlinguas.activity
 import com.example.tradutorlinguas.R
 import com.example.tradutorlinguas.databinding.ActivityMainBinding
 
-class ModifyIcon (private val animation: AnimatorView) {
+class ModifyIcon {
 
     fun iconsShow(root: ActivityMainBinding) {
         root.run {

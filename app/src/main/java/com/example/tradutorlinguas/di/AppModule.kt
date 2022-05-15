@@ -8,9 +8,7 @@ import com.example.tradutorlinguas.dbhistory.DataBaseHistory
 import com.example.tradutorlinguas.remote.PlayVoice
 import com.example.tradutorlinguas.remote.Translator
 import com.example.tradutorlinguas.repository.RepositoryHistory
-import com.example.tradutorlinguas.util.CaptureFlag
-import com.example.tradutorlinguas.util.CaptureHourDate
-import com.example.tradutorlinguas.util.SecurityPreferences
+import com.example.tradutorlinguas.util.*
 import com.example.tradutorlinguas.viewmodel.ViewModelApi
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -25,9 +23,10 @@ val getFlag = module { factory { CaptureFlag() } }
 val moduleCreateMenu = module { factory { CreateMenu() } }
 val securityPreferences = module { factory { SecurityPreferences(get()) } }
 val animatorImage = module { factory { AnimatorView() } }
-val modifyIcon = module { factory { ModifyIcon(get()) } }
+val modifyIcon = module { factory { ModifyIcon() } }
 val showToast = module { factory { ShowToast() } }
+val formatText = module { factory { FormatText() } }
 
 val appModules = listOf( repositoryModule, viewModelModule, playVoice, moduleCreateMenu,
         dataBase, repositoryHistory, captureHourDate, getFlag, securityPreferences, animatorImage,
-        modifyIcon, showToast)
+        modifyIcon, showToast, formatText)

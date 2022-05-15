@@ -10,13 +10,8 @@ class PlayVoice {
 
     private var textToSpeech: TextToSpeech? = null
 
-    fun init(context: Application, text: String, lang: String, playOrStop: Int){
-        try {
-            if (playOrStop == 0) {
-                textToSpeech = TextToSpeech(context, onInitListener(text, lang))
-            }
-            else { stopVoice() }
-        }
+    fun init(context: Application, text: String, lang: String){
+        try { textToSpeech = TextToSpeech(context, onInitListener(text, lang)) }
         catch (e: Exception) { }
     }
 
@@ -28,7 +23,9 @@ class PlayVoice {
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("erro", "Linguagem não suportada")
             }
-            else { textToSpeech?.speak(str, TextToSpeech.QUEUE_FLUSH, null) }
+            else {
+                textToSpeech?.speak(str, TextToSpeech.QUEUE_FLUSH, null)
+            }
         }
         else { Log.e("erro", "Não pode reproduzir") }
     }

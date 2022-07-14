@@ -146,7 +146,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
                         translate(from.str, to.str, text)
                     }
                 } catch (e: Exception) {
-                    showToast.toast("Erro na tradução, tente novamente!", this@MainActivity)
+                    showToast.toast("Erro na tradução, tente novamente!", application)
                 }
             }
 
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
                     val copy = ClipData.newPlainText("text", textComplete)
                     val clipboardManager = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                     clipboardManager.setPrimaryClip(copy)
-                    showToast.toast("Copiado!", this@MainActivity)
+                    showToast.toast("Copiado!", application)
                 }
             }
 
@@ -203,6 +203,12 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
 
             icSwapUp.setOnClickListener {
                 animatorImage.animationView(icSwapUp)
+                val from = textFrom.text
+                val to = textTo.text
+                if(from != "" && to != "") {
+                    textFrom.text = to.toString()
+                    textTo.text = from
+                }
             }
         }
     }
@@ -442,7 +448,6 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
     }
 
     override fun clickBox(id: Int) {
-
         val bundle = Bundle()
         val intent = Intent(this, HistoryActivity::class.java)
         bundle.putString("id", id.toString())

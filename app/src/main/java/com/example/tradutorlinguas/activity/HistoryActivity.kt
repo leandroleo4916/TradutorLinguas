@@ -81,21 +81,6 @@ class HistoryActivity : AppCompatActivity(), IModifyValue {
         }
     }
 
-    private fun setValuePlayOrStop(icPlay: ImageView) {
-        playOrStop = if (playOrStop == 0) {
-            modifyIconPlayStop(icPlay)
-            1
-        } else {
-            modifyIconPlayStop(icPlay)
-            0
-        }
-    }
-
-    private fun modifyIconPlayStop(icon: ImageView){
-        if (playOrStop == 0) { icon.setImageResource(R.drawable.ic_stop_write) }
-        else { icon.setImageResource(R.drawable.ic_sound_gray) }
-    }
-
     override fun onBackPressed() {
         playVoice.stopVoice()
         super.onBackPressed()

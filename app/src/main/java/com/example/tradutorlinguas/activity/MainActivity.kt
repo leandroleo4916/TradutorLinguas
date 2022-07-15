@@ -30,6 +30,7 @@ import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.util.*
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IModifyValue {
 
@@ -51,10 +52,10 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
     private var valueView = 0
     private var getValue = ""
     private var playOrStop = 0
+    private var sizeLayout by Delegates.notNull<Int>()
+    private var sizeHistory = 0
 
-    companion object {
-        private const val SPEECH_REQUEST_CODE = 0
-    }
+    companion object { private const val SPEECH_REQUEST_CODE = 0 }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,13 +68,38 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
         listener()
         recyclerHistory()
         observeHistory()
+        hideRecyclerWhenKeyBoard()
+    }
+
+    private fun hideRecyclerWhenKeyBoard(){
+        val box = binding.constraintTranslate
+        sizeLayout = box.height
+        binding.constraintTranslate.viewTreeObserver.addOnGlobalLayoutListener{
+
+            getValue = securityPreferences.getStoredString("value").toString()
+            if (getValue == "enable"){
+                val size = box.height
+                if (sizeLayout == 0) sizeLayout = size
+                if (sizeLayout > size) hideRecyclerView()
+                else showRecycler()
+            }
+        }
+    }
+
+    private fun showRecycler(){
+        binding.recyclerHistory.visibility = View.VISIBLE
+        if (sizeHistory == 0) {
+            binding.textTranslateHere.visibility = View.VISIBLE
+        }
     }
     
     private fun hideRecycler() {
-        if (getValue == "disable") {
-            binding.textTranslateHere.visibility = View.GONE
-            binding.recyclerHistory.visibility = View.GONE
-        }
+        if (getValue == "disable") hideRecyclerView()
+    }
+
+    private fun hideRecyclerView(){
+        binding.textTranslateHere.visibility = View.GONE
+        binding.recyclerHistory.visibility = View.GONE
     }
 
     private fun recyclerHistory() {
@@ -125,9 +151,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
 
             textFrom.editText?.doAfterTextChanged {
                 if (it.toString().isNotBlank()) {
-                    if (it.toString().length == 1) {
-                        modifyIcon.iconsShow(binding)
-                    }
+                    if (it.toString().length == 1) modifyIcon.iconsShow(binding)
                 } else {
                     modifyIcon.iconsHide(binding)
                     textTo.text = ""
@@ -196,9 +220,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
                 val textTo = textTo.text
                 val textComplete = "$from\n$textFrom\n\n$to\n$textTo"
 
-                if (textFrom.isNotEmpty() && textTo != "") {
-                    intentShare(textComplete)
-                }
+                if (textFrom.isNotEmpty() && textTo != "") intentShare(textComplete)
             }
 
             icSwapUp.setOnClickListener {
@@ -223,9 +245,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
     private fun translate(from: String, to: String, text: String) {
         if (validationInternet(this)) {
             observer(LanguageData(0, from, to, text, "", "", ""))
-        } else {
-            binding.textTo.text = getString(R.string.verifique_internet)
         }
+        else binding.textTo.text = getString(R.string.verifique_internet)
     }
 
     private fun playAndModifyIconPlayStop(interval: Long, icon: ImageView, text: String, from: String) {
@@ -259,12 +280,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
                             securityPreferences.putStoreString("value", "disable")
                             valueView = 1
                         }
-                        R.id.excluir_tudo -> {
-                            removeAllHistory()
-                        }
-                        R.id.sair -> {
-                            finish()
-                        }
+                        R.id.excluir_tudo -> removeAllHistory()
+                        R.id.sair -> finish()
                     }
                     true
                 }
@@ -285,12 +302,8 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
                             securityPreferences.putStoreString("value", "enable")
                             valueView = 0
                         }
-                        R.id.excluir_tudo -> {
-                            removeAllHistory()
-                        }
-                        R.id.sair -> {
-                            finish()
-                        }
+                        R.id.excluir_tudo -> removeAllHistory()
+                        R.id.sair -> finish()
                     }
                     true
                 }
@@ -371,21 +384,17 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
                 binding.textTranslateHere.visibility = View.GONE
                 adapterHistory.updateHistory(it)
                 size = it.size
+                sizeHistory = it.size
             } else {
-                if (getValue == "disable") {
-                    binding.textTranslateHere.visibility = View.GONE
-                } else {
-                    binding.textTranslateHere.visibility = View.VISIBLE
-                }
+                if (getValue == "disable") binding.textTranslateHere.visibility = View.GONE
+                else binding.textTranslateHere.visibility = View.VISIBLE
             }
         }
     }
 
     private var TextInputLayout.text: String
         get() = editText?.text?.toString() ?: ""
-        set(value) {
-            editText?.setText(value)
-        }
+        set(value) { editText?.setText(value) }
 
     private fun permissionVoice() {
 
@@ -402,9 +411,7 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
             val permission = arrayOf(Manifest.permission.RECORD_AUDIO)
             requestPermissions(permission, permissionCode)
 
-        } else {
-            openVoice()
-        }
+        } else openVoice()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
@@ -460,16 +467,12 @@ class MainActivity : AppCompatActivity(), IClickItemRecycler, INotification, IMo
             binding.textTranslateHere.visibility = View.GONE
         } else {
             getValue = securityPreferences.getStoredString("value").toString()
-            if (getValue == "disable") {
-                binding.textTranslateHere.visibility = View.GONE
-            } else {
-                binding.textTranslateHere.visibility = View.VISIBLE
-            }
+            sizeHistory = 0
+            if (getValue == "disable") binding.textTranslateHere.visibility = View.GONE
+            else binding.textTranslateHere.visibility = View.VISIBLE
         }
     }
 
-    override fun modifyValue(value: Int) {
-        playOrStop = 0
-    }
+    override fun modifyValue(value: Int) { playOrStop = 0 }
 
 }

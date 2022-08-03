@@ -9,3 +9,4 @@ Tecnológias Usadas
    * Coroutines
    * Recycler View
    * Animator
+   * LiveData
